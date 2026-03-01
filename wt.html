@@ -213,7 +213,17 @@ function renderQuiz(){const total=ALL_ANCHORS.length,current=ALL_ANCHORS[quizSta
 
 function quizAnswer(s,c){const ok=s===c;quizState.answered[quizState.index]=ok;quizState._selected=s;if(ok)quizState.score++;render()}
 
-function renderFill(){return`<div class="fill-container"><div class="fill-controls"><button class="fill-ctrl-btn ${fillDifficulty===1?'active':''}" onclick="fillDifficulty=1;render();">★</button><button class="fill-ctrl-btn ${fillDifficulty===2?'active':''}" onclick="fillDifficulty=2;render();">★★</button><button class="fill-ctrl-btn ${fillDifficulty===3?'active':''}" onclick="fillDifficulty=3;render();">★★★</button><button class="fill-ctrl-btn ${fillDifficulty===4?'active':''}" onclick="fillDifficulty=4;render();">★★★★</button><button class="fill-ctrl-btn ${fillDifficulty===5?'active':''}" onclick="fillDifficulty=5;render();">★★★★★</button></div><p style="text-align:center;font-size:13px;color:var(--gray);margin-bottom:24px;">Click blanks to reveal.</p><div style="text-align:center;font-size:11px;color:var(--gray);margin-bottom:20px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;"><span>★ Key words</span><span>★★ Every 4th</span><span>★★★ Every 2nd</span><span>★★★★ 3 of 4</span><span>★★★★★ Anchor only</span></div>${DATA.map(section=>`<div class="fill-card"><div class="fill-section-tag">${section.emoji} ${section.title}</div>${section.lines.map(line=>{if(!line.anchor)return'';let h='';if(line.beat)h+=`<div class="beat-label">${line.beat}</div>`;h+=`<div style="margin:8px 0;"><span class="fill-anchor">${line.anchor}</span><div class="fill-text">${blankify(line.script,fillDifficulty)}</div></div>`;return h}).join('')}</div>`).join('')}</div>`}
+function splitResponse(text){
+  var m=text.match(/^(.*?)\u201c(.*?)\u201d(.*)$/);
+  if(m) return {label:m[1].trim(), script:m[2].trim(), suffix:m[3].trim()};
+  m=text.match(/^(.*?)"(.*?)"(.*)$/);
+  if(m) return {label:m[1].trim(), script:m[2].trim(), suffix:m[3].trim()};
+  var ci=text.indexOf(':');
+  if(ci>0 && ci<text.length-1) return {label:text.substring(0,ci+1).trim(), script:text.substring(ci+1).trim(), suffix:''};
+  return {label:'', script:text, suffix:''};
+}
+
+function renderFill(){return`<div class="fill-container"><div class="fill-controls"><button class="fill-ctrl-btn ${fillDifficulty===1?'active':''}" onclick="fillDifficulty=1;render();">★</button><button class="fill-ctrl-btn ${fillDifficulty===2?'active':''}" onclick="fillDifficulty=2;render();">★★</button><button class="fill-ctrl-btn ${fillDifficulty===3?'active':''}" onclick="fillDifficulty=3;render();">★★★</button><button class="fill-ctrl-btn ${fillDifficulty===4?'active':''}" onclick="fillDifficulty=4;render();">★★★★</button><button class="fill-ctrl-btn ${fillDifficulty===5?'active':''}" onclick="fillDifficulty=5;render();">★★★★★</button></div><p style="text-align:center;font-size:13px;color:var(--gray);margin-bottom:24px;">Click blanks to reveal.</p><div style="text-align:center;font-size:11px;color:var(--gray);margin-bottom:20px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;"><span>★ Key words</span><span>★★ Every 4th</span><span>★★★ Every 2nd</span><span>★★★★ 3 of 4</span><span>★★★★★ Anchor only</span></div>${DATA.map(section=>`<div class="fill-card"><div class="fill-section-tag">${section.emoji} ${section.title}</div>${section.lines.map(line=>{if(line.type==='response'){var r=splitResponse(line.text);return`<div class="response-box" style="display:block;"><span>${r.label}</span> <span class="fill-text" style="display:inline;">${blankify(r.script,fillDifficulty)}</span>${r.suffix?' <span style="font-style:italic;opacity:0.7;">'+r.suffix+'</span>':''}</div>`}if(line.type==='tip'){return`<div class="tip-box">${line.text}</div>`}if(line.type==='stage'){return`<div class="stage-dir">(${line.text})</div>`}if(!line.anchor)return'';let h='';if(line.beat)h+=`<div class="beat-label">${line.beat}</div>`;h+=`<div style="margin:8px 0;"><span class="fill-anchor">${line.anchor}</span><div class="fill-text">${blankify(line.script,fillDifficulty)}</div></div>`;return h}).join('')}</div>`).join('')}</div>`}
 
 function blankify(t,d){
   var w=t.split(' ');
@@ -246,6 +256,12 @@ function renderFirstLetter(){
   DATA.map(function(section){
     return '<div class="fl-card"><div class="fill-section-tag">'+section.emoji+' '+section.title+'</div>'+
     section.lines.map(function(line){
+      if(line.type==='response'){
+        var r=splitResponse(line.text);
+        return '<div class="response-box" style="display:block;"><span>'+r.label+'</span> <span class="fl-text" style="display:inline;">'+firstLetterify(r.script)+'</span>'+(r.suffix?' <span style="font-style:italic;opacity:0.7;">'+r.suffix+'</span>':'')+'</div>';
+      }
+      if(line.type==='tip') return '<div class="tip-box">'+line.text+'</div>';
+      if(line.type==='stage') return '<div class="stage-dir">('+line.text+')</div>';
       if(!line.anchor) return '';
       var h='';
       if(line.beat) h+='<div class="beat-label">'+line.beat+'</div>';

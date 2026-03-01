@@ -143,6 +143,18 @@ body {
   color: var(--green);
   font-style: italic;
 }
+
+.section-subtitle {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--blue);
+  background: var(--lighter);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  line-height: 1.5;
+  border-left: 3px solid var(--blue-light);
+}
 .delivery-cue::before { content: "🎯 "; }
 
 .flow-map {
@@ -588,6 +600,7 @@ const DATA = [
     id: "pillar1",
     emoji: "🥇",
     title: "PILLAR 1 \u2013 Prepare Your Home for Maximum Appeal",
+    subtitle: "We make your home look and feel irresistible so buyers fall in love and compete with strong offers.",
     cue: "Warm and visual. Paint the picture. Help them see their home through buyer eyes.",
     flow: ["Get Ready (designer, staging, warranty)", "Make It Visible (cards, sheets, brochures)", "Make It Unforgettable (showings, photos, tours)"],
     lines: [
@@ -603,6 +616,7 @@ const DATA = [
     id: "pillar2",
     emoji: "🥈",
     title: "PILLAR 2 \u2013 Market to the Maximum Number of Buyers",
+    subtitle: "We expose your home everywhere and create real buyer competition.",
     cue: "Energetic, proactive. You\u2019re the engine, not a bystander.",
     flow: ["Find Buyers (channels, outreach, 24/7)", "Track & Report (lockbox, feedback, intelligence)"],
     lines: [
@@ -619,6 +633,7 @@ const DATA = [
     id: "pillar3",
     emoji: "🥉",
     title: "PILLAR 3 \u2013 Negotiate the Highest Price and Best Terms",
+    subtitle: "We follow a proven three-phase negotiation process that builds maximum leverage and protects your proceeds.",
     cue: "Controlled intensity. You\u2019re the protector at the table.",
     flow: ["Position (motivations, leverage)", "Exchange (firm, never give)", "Ceiling", "Beyond price (finish line)"],
     lines: [
@@ -709,6 +724,7 @@ function renderRead() {
         <span class="toggle">▼</span>
       </div>
       <div class="section-body">
+        ${section.subtitle ? `<div class="section-subtitle">${section.subtitle}</div>` : ''}
         <div class="delivery-cue">${section.cue}</div>
         ${section.flow ? `
           <div class="flow-map">
@@ -838,6 +854,7 @@ function renderFill() {
       ${DATA.map(section => `
         <div class="fill-card">
           <div class="fill-section-tag">${section.emoji} ${section.title}</div>
+          ${section.subtitle ? `<div class="section-subtitle" style="font-size:13px;margin-bottom:12px;">${section.subtitle}</div>` : ''}
           ${section.lines.map(line => {
             if (line.type === 'stage') return `<div class="stage-dir">(${line.text})</div>`;
             let html = '';
@@ -884,6 +901,7 @@ function renderFirstLetter(){
   return '<div class="fl-container"><p style="text-align:center;font-size:13px;color:var(--gray);margin-bottom:24px;">First letter shown, rest hidden. Click a word to reveal it. Practice recalling from just the first letters.</p>'+
   DATA.map(function(section){
     return '<div class="fl-card"><div class="fill-section-tag">'+section.emoji+' '+section.title+'</div>'+
+    (section.subtitle ? '<div class="section-subtitle" style="font-size:13px;margin-bottom:12px;">'+section.subtitle+'</div>' : '')+
     section.lines.map(function(line){
       if(!line.anchor) return '';
       var h='';
