@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Script Tools</title>
+<title>Listing Presentation EN</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 :root {
@@ -88,7 +88,7 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
 <body>
 
 <header>
-  <div class="header-title">Script Tools</div>
+  <div class="header-title">Listing Presentation EN</div>
 </header>
 
 <main>
@@ -96,19 +96,13 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
 
   <div class="tool-pair">
     <!-- VOICE -->
-    <div class="tool-item" style="cursor:pointer; flex-direction:column; align-items:flex-start; gap:10px;" onclick="toggleAudio(this)">
-      <div style="display:flex; align-items:center; gap:16px; width:100%;">
-        <div class="tool-icon" id="voice-icon">🎙️</div>
-        <div class="tool-info">
-          <div class="tool-name">Voice</div>
-          <div class="tool-desc">Listing presentation audio · LP English</div>
-        </div>
-        <span class="tool-arrow" id="voice-arrow">▶</span>
-      </div>
-      <div id="audio-container" style="display:none; width:100%; padding: 0 4px 4px;">
-<audio autoplay loop muted controls controlsList="nodownload">
-  <source src="../mp3/lpen.mp3" type="audio/mpeg">
-</audio>
+    <div class="tool-item" style="gap:16px;">
+      <div class="tool-icon">🎙️</div>
+      <div class="tool-info">
+        <div class="tool-name">Voice</div>
+        <audio loop controls controlsList="nodownload" style="width:100%; height:36px; margin-top:6px; accent-color: var(--navy);">
+          <source src="../mp3/lpen.mp3" type="audio/mpeg">
+        </audio>
       </div>
     </div>
 
@@ -155,30 +149,6 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
 
 </main>
 
-<script>
-function toggleAudio(el) {
-  const container = document.getElementById('audio-container');
-  const audio = document.getElementById('lp-audio');
-  const arrow = document.getElementById('voice-arrow');
-  const icon = document.getElementById('voice-icon');
 
-  if (container.style.display === 'none') {
-    container.style.display = 'block';
-    audio.play();
-    arrow.textContent = '⏸';
-    icon.textContent = '🔊';
-  } else {
-    if (audio.paused) {
-      audio.play();
-      arrow.textContent = '⏸';
-      icon.textContent = '🔊';
-    } else {
-      audio.pause();
-      arrow.textContent = '▶';
-      icon.textContent = '🎙️';
-    }
-  }
-}
-</script>
 </body>
 </html>
