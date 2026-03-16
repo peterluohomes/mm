@@ -96,14 +96,18 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
 
   <div class="tool-pair">
     <!-- VOICE -->
-    <div class="tool-item" style="gap:16px;">
-      <div class="tool-icon">🎙️</div>
-      <div class="tool-info">
-        <div class="tool-name">Voice</div>
-        <audio loop controls controlsList="nodownload" style="width:100%; height:36px; margin-top:6px; accent-color: var(--navy);">
-          <source src="../mp3/lpen.mp3" type="audio/mpeg">
-        </audio>
+    <div class="tool-item" style="gap:16px; flex-direction:column; align-items:flex-start;">
+      <div style="display:flex; align-items:center; gap:16px; width:100%;">
+        <div class="tool-icon">🎙️</div>
+        <div class="tool-info">
+          <div class="tool-name">Voice</div>
+          <div id="audio-stats" style="font-size:12px; color:var(--light); margin-top:3px;">Loading stats…</div>
+        </div>
+        <button onclick="resetStats()" title="Reset stats" style="background:none; border:none; cursor:pointer; font-size:16px; color:var(--light); padding:4px; flex-shrink:0;">↺</button>
       </div>
+      <audio id="lpen-audio" loop controls controlsList="nodownload" style="width:100%; height:36px; accent-color: var(--navy);">
+        <source src="../mp3/lpen.mp3" type="audio/mpeg">
+      </audio>
     </div>
 
     <!-- WALKTHROUGH -->
@@ -150,5 +154,81 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
 </main>
 
 
+<script>
+(function () {
+  const STORE_KEY = 'lpen_stats';
+  const audio = document.getElementById('lpen-audio');
+  const statsEl = document.getElementById('audio-stats');
+
+  // Load persisted stats
+  let stats = JSON.parse(localStorage.getItem(STORE_KEY) || '{"plays":0,"totalSec":0}');
+  let sessionStart = null;   // when current play began
+  let lastSaved = 0;         // seconds already counted for this play segment
+
+  function fmtTime(sec) {
+    sec = Math.floor(sec);
+    if (sec < 60) return sec + 's';
+    const m = Math.floor(sec / 60), s = sec % 60;
+    if (m < 60) return m + 'm ' + (s ? s + 's' : '');
+    const h = Math.floor(m / 60), rm = m % 60;
+    return h + 'h ' + (rm ? rm + 'm' : '');
+  }
+
+  function renderStats() {
+    statsEl.textContent =
+      '▶ ' + stats.plays + (stats.plays === 1 ? ' play' : ' plays') +
+      ' · ⏱ ' + fmtTime(stats.totalSec) + ' total';
+  }
+
+  function save() {
+    localStorage.setItem(STORE_KEY, JSON.stringify(stats));
+  }
+
+  // Count a new play when audio starts from paused/stopped
+  audio.addEventListener('play', () => {
+    stats.plays++;
+    sessionStart = Date.now();
+    lastSaved = 0;
+    save();
+    renderStats();
+  });
+
+  // Accumulate time while playing (fires every ~250 ms)
+  audio.addEventListener('timeupdate', () => {
+    if (sessionStart === null) return;
+    const elapsed = (Date.now() - sessionStart) / 1000;
+    const delta = elapsed - lastSaved;
+    if (delta >= 5) {           // save every 5 real-time seconds
+      stats.totalSec += delta;
+      lastSaved = elapsed;
+      save();
+      renderStats();
+    }
+  });
+
+  // Flush remaining time on pause / end
+  function flushTime() {
+    if (sessionStart === null) return;
+    const elapsed = (Date.now() - sessionStart) / 1000;
+    stats.totalSec += elapsed - lastSaved;
+    sessionStart = null;
+    lastSaved = 0;
+    save();
+    renderStats();
+  }
+  audio.addEventListener('pause', flushTime);
+  audio.addEventListener('ended', flushTime);
+
+  // Reset button
+  window.resetStats = function () {
+    if (!confirm('Reset play stats?')) return;
+    stats = { plays: 0, totalSec: 0 };
+    save();
+    renderStats();
+  };
+
+  renderStats();
+})();
+</script>
 </body>
 </html>
