@@ -103,6 +103,30 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
 #methods-toggle { cursor: pointer; }
 #methods-arrow { transition: transform 0.2s ease; display: inline-block; }
 #methods-arrow.open { transform: rotate(90deg); }
+.method-counter {
+  display: flex; align-items: center; gap: 8px; margin-top: 8px;
+}
+.counter-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--navy); color: #fff;
+  border: none; font-size: 20px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent;
+  transition: transform 0.1s ease, background 0.1s ease;
+}
+.counter-btn:active { transform: scale(0.88); background: var(--warm-dark); }
+.counter-display {
+  font-size: 13px; font-weight: 700; color: var(--navy);
+  min-width: 28px; text-align: center;
+}
+.counter-label {
+  font-size: 12px; color: var(--light); flex: 1;
+}
+.counter-reset {
+  font-size: 11px; color: var(--light); background: none; border: none;
+  cursor: pointer; padding: 4px 2px; text-decoration: underline;
+  -webkit-tap-highlight-color: transparent;
+}
 </style>
 </head>
 <body>
@@ -200,6 +224,11 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
         <div class="method-body">
           <div class="method-title">Anchor Word Method</div>
           <div class="method-desc">Distill each section to one trigger word; chain anchors as a memory spine.</div>
+          <div class="method-counter">
+            <button class="counter-btn" onclick="incrementCounter(1)">+</button>
+            <span class="counter-display" id="cnt-1">0</span>
+            <span class="counter-label">sessions</span>
+          </div>
         </div>
       </div>
       <div class="method-item" style="--n:2">
@@ -207,6 +236,11 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
         <div class="method-body">
           <div class="method-title">Chunking + Spaced Repetition</div>
           <div class="method-desc">Break into small chunks; review at increasing intervals: 1hr, 1 day, 3 days.</div>
+          <div class="method-counter">
+            <button class="counter-btn" onclick="incrementCounter(2)">+</button>
+            <span class="counter-display" id="cnt-2">0</span>
+            <span class="counter-label">sessions</span>
+          </div>
         </div>
       </div>
       <div class="method-item" style="--n:3">
@@ -214,6 +248,11 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
         <div class="method-body">
           <div class="method-title">Out-Loud Rehearsal with Role Play</div>
           <div class="method-desc">Speak aloud with movement; simulate real responses to force active recall.</div>
+          <div class="method-counter">
+            <button class="counter-btn" onclick="incrementCounter(3)">+</button>
+            <span class="counter-display" id="cnt-3">0</span>
+            <span class="counter-label">sessions</span>
+          </div>
         </div>
       </div>
       <div class="method-item" style="--n:4">
@@ -221,6 +260,11 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
         <div class="method-body">
           <div class="method-title">Record &amp; Shadow</div>
           <div class="method-desc">Record the script; play it back and speak along to train natural rhythm.</div>
+          <div class="method-counter">
+            <button class="counter-btn" onclick="incrementCounter(4)">+</button>
+            <span class="counter-display" id="cnt-4">0</span>
+            <span class="counter-label">sessions</span>
+          </div>
         </div>
       </div>
       <div class="method-item" style="--n:5">
@@ -228,6 +272,11 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
         <div class="method-body">
           <div class="method-title">Teach-Back / Compression</div>
           <div class="method-desc">Explain it as if teaching someone; compress to half the words for deep understanding.</div>
+          <div class="method-counter">
+            <button class="counter-btn" onclick="incrementCounter(5)">+</button>
+            <span class="counter-display" id="cnt-5">0</span>
+            <span class="counter-label">sessions</span>
+          </div>
         </div>
       </div>
       <div class="method-item" style="--n:6">
@@ -235,6 +284,11 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
         <div class="method-body">
           <div class="method-title">The Memory Palace</div>
           <div class="method-desc">Place each section at a location in a familiar space; walk it mentally to recall.</div>
+          <div class="method-counter">
+            <button class="counter-btn" onclick="incrementCounter(6)">+</button>
+            <span class="counter-display" id="cnt-6">0</span>
+            <span class="counter-label">sessions</span>
+          </div>
         </div>
       </div>
       <div class="method-item" style="--n:7">
@@ -242,6 +296,11 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
         <div class="method-body">
           <div class="method-title">Sleep-Adjacent Review</div>
           <div class="method-desc">Study right before sleep and upon waking; brain consolidates memory overnight.</div>
+          <div class="method-counter">
+            <button class="counter-btn" onclick="incrementCounter(7)">+</button>
+            <span class="counter-display" id="cnt-7">0</span>
+            <span class="counter-label">sessions</span>
+          </div>
         </div>
       </div>
       <div class="method-item last" style="--n:8">
@@ -249,8 +308,18 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
         <div class="method-body">
           <div class="method-title">Emotional Anchoring</div>
           <div class="method-desc">Attach genuine feeling to each section; know the <em>why</em> so words follow naturally.</div>
+          <div class="method-counter">
+            <button class="counter-btn" onclick="incrementCounter(8)">+</button>
+            <span class="counter-display" id="cnt-8">0</span>
+            <span class="counter-label">sessions</span>
+          </div>
         </div>
       </div>
+    </div>
+
+    <!-- Single reset for all counters -->
+    <div style="padding: 10px 20px 14px; text-align: right; border-top: 1px solid var(--border);">
+      <button class="counter-reset" onclick="resetAllCounters()" style="font-size:12px; color:var(--light);">Reset all session counts</button>
     </div>
   </div>
 
@@ -344,6 +413,53 @@ function toggleMethods() {
 
   renderStats();
 })();
+</script>
+<script>
+// Method session counters — persisted in localStorage
+const COUNTER_KEY = 'method_counters';
+
+function loadCounters() {
+  return JSON.parse(localStorage.getItem(COUNTER_KEY) || '{}');
+}
+
+function saveCounters(data) {
+  localStorage.setItem(COUNTER_KEY, JSON.stringify(data));
+}
+
+function renderCounters() {
+  const data = loadCounters();
+  for (let i = 1; i <= 8; i++) {
+    const el = document.getElementById('cnt-' + i);
+    if (el) el.textContent = data[i] || 0;
+  }
+}
+
+function incrementCounter(n) {
+  const data = loadCounters();
+  data[n] = (data[n] || 0) + 1;
+  saveCounters(data);
+  const el = document.getElementById('cnt-' + n);
+  if (el) {
+    el.textContent = data[n];
+    // brief pulse animation
+    el.style.transition = 'transform 0.15s ease, color 0.15s ease';
+    el.style.transform = 'scale(1.4)';
+    el.style.color = 'var(--warm-dark)';
+    setTimeout(() => { el.style.transform = 'scale(1)'; el.style.color = 'var(--navy)'; }, 150);
+  }
+}
+
+function resetAllCounters() {
+  if (!confirm('Reset all 8 session counts?')) return;
+  saveCounters({});
+  for (let i = 1; i <= 8; i++) {
+    const el = document.getElementById('cnt-' + i);
+    if (el) el.textContent = 0;
+  }
+}
+
+// Init on load
+renderCounters();
 </script>
 </body>
 </html>
