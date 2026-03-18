@@ -82,7 +82,27 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
 .lang-info { flex: 1; }
 .lang-name { font-size: 14px; font-weight: 600; color: var(--mid); }
 .lang-desc { font-size: 12px; color: var(--light); margin-top: 2px; }
-.lang-arrow { font-size: 18px; color: var(--light); flex-shrink: 0; }
+.method-item {
+  display: flex; align-items: flex-start; gap: 14px; padding: 13px 20px;
+  border-bottom: 1px solid var(--border); background: var(--white);
+  animation: fadeIn 0.2s ease both;
+  animation-delay: calc(var(--n) * 40ms);
+}
+.method-item.last { border-bottom: none; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.method-num {
+  min-width: 26px; height: 26px; border-radius: 50%;
+  background: var(--navy); color: #fff;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.method-body { flex: 1; }
+.method-title { font-size: 14px; font-weight: 600; color: var(--warm-dark); line-height: 1.3; }
+.method-desc { font-size: 12px; color: var(--mid); margin-top: 3px; line-height: 1.5; }
+#methods-toggle { cursor: pointer; }
+#methods-arrow { transition: transform 0.2s ease; display: inline-block; }
+#methods-arrow.open { transform: rotate(90deg); }
 </style>
 </head>
 <body>
@@ -156,8 +176,98 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
     </a>
   </div>
 
+
+  <!-- 8 METHODS SECTION -->
+  <div class="section-label" style="margin-top:28px;">
+    <span class="section-pill" style="background:var(--navy);">💡</span> Script Memory Methods
+  </div>
+
+  <div class="tool-pair" id="methods-card">
+    <!-- Toggle header -->
+    <div class="tool-item" id="methods-toggle" style="cursor:pointer;" onclick="toggleMethods()">
+      <div class="tool-icon" style="background:#eef2fb; border-color:#c8d6f0; font-size:22px;">🧠</div>
+      <div class="tool-info">
+        <div class="tool-name">8 Ways to Remember Scripts Fast</div>
+        <div class="tool-desc">Tap to expand your memory toolkit</div>
+      </div>
+      <span class="tool-arrow" id="methods-arrow">›</span>
+    </div>
+
+    <!-- Methods list (hidden by default) -->
+    <div id="methods-list" style="display:none;">
+      <div class="method-item" style="--n:1">
+        <div class="method-num">1</div>
+        <div class="method-body">
+          <div class="method-title">Anchor Word Method</div>
+          <div class="method-desc">Distill each section to one trigger word; chain anchors as a memory spine.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:2">
+        <div class="method-num">2</div>
+        <div class="method-body">
+          <div class="method-title">Chunking + Spaced Repetition</div>
+          <div class="method-desc">Break into small chunks; review at increasing intervals: 1hr, 1 day, 3 days.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:3">
+        <div class="method-num">3</div>
+        <div class="method-body">
+          <div class="method-title">Out-Loud Rehearsal with Role Play</div>
+          <div class="method-desc">Speak aloud with movement; simulate real responses to force active recall.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:4">
+        <div class="method-num">4</div>
+        <div class="method-body">
+          <div class="method-title">Record &amp; Shadow</div>
+          <div class="method-desc">Record the script; play it back and speak along to train natural rhythm.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:5">
+        <div class="method-num">5</div>
+        <div class="method-body">
+          <div class="method-title">Teach-Back / Compression</div>
+          <div class="method-desc">Explain it as if teaching someone; compress to half the words for deep understanding.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:6">
+        <div class="method-num">6</div>
+        <div class="method-body">
+          <div class="method-title">The Memory Palace</div>
+          <div class="method-desc">Place each section at a location in a familiar space; walk it mentally to recall.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:7">
+        <div class="method-num">7</div>
+        <div class="method-body">
+          <div class="method-title">Sleep-Adjacent Review</div>
+          <div class="method-desc">Study right before sleep and upon waking; brain consolidates memory overnight.</div>
+        </div>
+      </div>
+      <div class="method-item last" style="--n:8">
+        <div class="method-num">8</div>
+        <div class="method-body">
+          <div class="method-title">Emotional Anchoring</div>
+          <div class="method-desc">Attach genuine feeling to each section; know the <em>why</em> so words follow naturally.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </main>
 
+
+<script>
+function toggleMethods() {
+  const list = document.getElementById('methods-list');
+  const arrow = document.getElementById('methods-arrow');
+  const toggle = document.getElementById('methods-toggle');
+  const isOpen = list.style.display !== 'none';
+  list.style.display = isOpen ? 'none' : 'block';
+  arrow.classList.toggle('open', !isOpen);
+  toggle.querySelector('.tool-desc').textContent = isOpen ? 'Tap to expand your memory toolkit' : 'Tap to collapse';
+}
+</script>
 
 <script>
 (function () {
