@@ -101,13 +101,18 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
         <div class="tool-icon">🎙️</div>
         <div class="tool-info">
           <div class="tool-name">Voice</div>
+    <!-- Voice -->
+    <a class="lang-item" href="./lpen">
+      <span class="lang-flag" style="background:#eef6f0; border-color:#b8dfc8; color:#2a6e46;">WT</span>
+      <div class="lang-info">
+        <div class="lang-name">Presenting</div>
+      </div>
+      <span class="lang-arrow">›</span>
+    </a>
+
           <div id="audio-stats" style="font-size:12px; color:var(--light); margin-top:3px;">Loading stats…</div>
         </div>
-        <button onclick="resetStats()" title="Reset stats" style="background:none; border:none; cursor:pointer; font-size:16px; color:var(--light); padding:4px; flex-shrink:0;">↺</button>
       </div>
-      <audio id="lpen-audio" loop controls controlsList="nodownload" style="width:100%; height:36px; accent-color: var(--navy);">
-        <source src="../mp3/lpen.mp3" type="audio/mpeg">
-      </audio>
     </div>
 
     <!-- WALKTHROUGH -->
