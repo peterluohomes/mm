@@ -321,6 +321,7 @@ const PHASES = [
 
 const BASE_URL = 'https://peterluo.homes/mp3/';
 const STORAGE_KEY = 'lpen_stats_v1';
+const RESUME_KEY = 'lpen_resume_v1';
 
 // ── State ──
 let stats = loadStats();
@@ -499,16 +500,19 @@ function togglePlay(phaseNum) {
       currentAudio.play();
       lastTimeSample = Date.now();
       startProgressLoop();
+      saveResumeState();
     } else {
       currentAudio.pause();
       flushListenTime();
       cancelAnimationFrame(rafId);
+      saveResumeState();
     }
     render();
     return;
   }
 
-  // New playback
+  // New playback — clear old resume state
+  clearResumeState();
   currentAudio = new Audio(url);
   currentPhase = phaseNum;
   lastTimeSample = Date.now();
@@ -516,6 +520,11 @@ function togglePlay(phaseNum) {
   currentAudio.addEventListener('loadedmetadata', () => {
     const durEl = document.getElementById('tdur-' + phaseNum);
     if (durEl) durEl.textContent = fmtTime(currentAudio.duration);
+  });
+
+  // iOS fires 'pause' when suspending the app — save state immediately
+  currentAudio.addEventListener('pause', () => {
+    saveResumeState();
   });
 
   currentAudio.addEventListener('ended', () => {
@@ -530,6 +539,7 @@ function togglePlay(phaseNum) {
   currentAudio.play().then(() => {
     render();
     startProgressLoop();
+    saveResumeState();
   }).catch(e => {
     console.error('Playback failed:', e);
     currentAudio = null;
@@ -568,9 +578,163 @@ function seek(e, phaseNum) {
   currentAudio.currentTime = pct * currentAudio.duration;
 }
 
+// ── Resume: save/restore playback state ──
+function saveResumeState() {
+  if (currentPhase && currentAudio) {
+    const si = selectedSpeed[currentPhase] || 0;
+    const state = {
+      phase: currentPhase,
+      speed: si,
+      position: currentAudio.currentTime || 0,
+      wasPlaying: !currentAudio.paused,
+      savedAt: Date.now()
+    };
+    localStorage.setItem(RESUME_KEY, JSON.stringify(state));
+  }
+}
+
+function clearResumeState() {
+  localStorage.removeItem(RESUME_KEY);
+}
+
+function loadResumeState() {
+  try {
+    const d = JSON.parse(localStorage.getItem(RESUME_KEY));
+    if (!d || !d.phase) return null;
+    // Only resume if saved within last 2 hours
+    if (Date.now() - d.savedAt > 2 * 60 * 60 * 1000) {
+      clearResumeState();
+      return null;
+    }
+    return d;
+  } catch(e) { return null; }
+}
+
+function createAudioWithResume(phaseNum, speedIdx, position, autoPlay) {
+  const file = PHASES[phaseNum - 1].files[speedIdx].file;
+  const url = BASE_URL + encodeURIComponent(file);
+
+  // Kill any existing audio cleanly
+  if (currentAudio) {
+    try { currentAudio.pause(); } catch(e) {}
+    currentAudio = null;
+  }
+
+  currentAudio = new Audio(url);
+  currentAudio.preload = 'auto';
+  currentPhase = phaseNum;
+
+  // Use a one-time listener to seek AFTER audio is ready
+  let seeked = false;
+  function doSeek() {
+    if (seeked) return;
+    seeked = true;
+    if (position > 0 && currentAudio.duration && position < currentAudio.duration) {
+      currentAudio.currentTime = position;
+    }
+    const durEl = document.getElementById('tdur-' + phaseNum);
+    if (durEl && currentAudio.duration) durEl.textContent = fmtTime(currentAudio.duration);
+    const fill = document.getElementById('pfill-' + phaseNum);
+    if (fill && currentAudio.duration) {
+      fill.style.width = (position / currentAudio.duration * 100) + '%';
+    }
+    const tcur = document.getElementById('tcur-' + phaseNum);
+    if (tcur) tcur.textContent = fmtTime(position);
+
+    if (autoPlay) {
+      lastTimeSample = Date.now();
+      currentAudio.play().then(() => {
+        render();
+        startProgressLoop();
+      }).catch(() => {
+        // iOS blocked autoplay — user will see play button, position is correct
+        render();
+      });
+    } else {
+      render();
+    }
+  }
+
+  // Try multiple events — iOS is inconsistent about which fires
+  currentAudio.addEventListener('loadedmetadata', doSeek, { once: true });
+  currentAudio.addEventListener('canplay', doSeek, { once: true });
+
+  // Fallback: if neither fires within 2 seconds, force seek
+  setTimeout(doSeek, 2000);
+
+  currentAudio.addEventListener('ended', () => {
+    flushListenTime();
+    recordPlay(file);
+    currentAudio.currentTime = 0;
+    lastTimeSample = Date.now();
+    currentAudio.play();
+    render();
+  });
+
+  // Kick off loading
+  currentAudio.load();
+}
+
+function tryResume() {
+  const state = loadResumeState();
+  if (!state) return;
+
+  selectedSpeed[state.phase] = state.speed;
+  openPhase = state.phase;
+  render();
+
+  createAudioWithResume(state.phase, state.speed, state.position, state.wasPlaying);
+}
+
+// Save state periodically while playing
+setInterval(() => {
+  if (currentAudio && !currentAudio.paused) {
+    saveResumeState();
+  }
+}, 2000);
+
+// Save state when app goes to background or closes
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    flushListenTime();
+    saveResumeState();
+  } else if (document.visibilityState === 'visible') {
+    // When returning, check if audio is dead (iOS kills it)
+    if (currentPhase && currentAudio) {
+      // Test if audio object is still alive
+      const isAlive = !currentAudio.paused || currentAudio.readyState > 0;
+      if (!isAlive) {
+        // Audio was killed — recreate from saved state
+        const state = loadResumeState();
+        if (state) {
+          createAudioWithResume(state.phase, state.speed, state.position, state.wasPlaying);
+        }
+      } else if (currentAudio.paused) {
+        // Audio exists but was paused by iOS — try to resume
+        lastTimeSample = Date.now();
+        currentAudio.play().then(() => {
+          startProgressLoop();
+          render();
+        }).catch(() => {});
+      }
+    }
+  }
+});
+
+window.addEventListener('beforeunload', () => {
+  flushListenTime();
+  saveResumeState();
+});
+
+window.addEventListener('pagehide', () => {
+  flushListenTime();
+  saveResumeState();
+});
+
 // ── Init ──
 render();
 updateStatsUI();
+tryResume();
 </script>
 </body>
 </html>
