@@ -98,18 +98,18 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
   flex-shrink: 0; margin-top: 1px;
 }
 .method-body { flex: 1; }
-.method-title { font-size: 14px; font-weight: 600; color: var(--warm-dark); line-height: 1.3; }
+.method-title-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.method-title { font-size: 14px; font-weight: 600; color: var(--warm-dark); line-height: 1.3; flex: 1; }
 .method-desc { font-size: 12px; color: var(--mid); margin-top: 3px; line-height: 1.5; }
 #methods-toggle { cursor: pointer; }
 #methods-arrow { transition: transform 0.2s ease; display: inline-block; }
 #methods-arrow.open { transform: rotate(90deg); }
-.method-counter {
-  display: flex; align-items: center; gap: 8px; margin-top: 8px;
-}
 .counter-btn {
-  width: 32px; height: 32px; border-radius: 50%;
+  width: 24px; height: 24px; border-radius: 50%;
   background: var(--navy); color: #fff;
-  border: none; font-size: 20px; line-height: 1;
+  border: none; font-size: 16px; line-height: 1;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent;
   transition: transform 0.1s ease, background 0.1s ease;
@@ -117,10 +117,7 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
 .counter-btn:active { transform: scale(0.88); background: var(--warm-dark); }
 .counter-display {
   font-size: 13px; font-weight: 700; color: var(--navy);
-  min-width: 28px; text-align: center;
-}
-.counter-label {
-  font-size: 12px; color: var(--light); flex: 1;
+  min-width: 16px; text-align: center; flex-shrink: 0;
 }
 .counter-reset {
   font-size: 11px; color: var(--light); background: none; border: none;
@@ -209,7 +206,7 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
   </div>
 
 
-  <!-- 8 METHODS SECTION -->
+  <!-- 10 METHODS SECTION -->
   <div class="section-label" style="margin-top:28px;">
     <span class="section-pill" style="background:var(--navy);">💡</span> Script Memory Methods
   </div>
@@ -219,7 +216,7 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
     <div class="tool-item" id="methods-toggle" style="cursor:pointer;" onclick="toggleMethods()">
       <div class="tool-icon" style="background:#eef2fb; border-color:#c8d6f0; font-size:22px;">🧠</div>
       <div class="tool-info">
-        <div class="tool-name">8 Ways to Remember Scripts Fast</div>
+        <div class="tool-name">10 Ways to Remember Scripts Fast</div>
         <div class="tool-desc">Tap to expand your memory toolkit</div>
       </div>
       <span class="tool-arrow" id="methods-arrow">›</span>
@@ -230,97 +227,111 @@ main { flex: 1; padding: 20px 18px 0; max-width: 500px; margin: 0 auto; width: 1
       <div class="method-item" style="--n:1">
         <div class="method-num">1</div>
         <div class="method-body">
-          <div class="method-title">Anchor Word Method</div>
-          <div class="method-desc">Distill each section to one trigger word; chain anchors as a memory spine.</div>
-          <div class="method-counter">
+          <div class="method-title-row">
+            <div class="method-title">Chunking</div>
             <button class="counter-btn" onclick="incrementCounter(1)">+</button>
             <span class="counter-display" id="cnt-1">0</span>
-            <span class="counter-label">sessions</span>
           </div>
+          <div class="method-desc">Break your massive script into much smaller, manageable sections. Master each tiny chunk perfectly before you move on to the next.</div>
         </div>
       </div>
       <div class="method-item" style="--n:2">
         <div class="method-num">2</div>
         <div class="method-body">
-          <div class="method-title">Chunking + Spaced Repetition</div>
-          <div class="method-desc">Break into small chunks; review at increasing intervals: 1hr, 1 day, 3 days.</div>
-          <div class="method-counter">
+          <div class="method-title-row">
+            <div class="method-title">First Letter Method</div>
             <button class="counter-btn" onclick="incrementCounter(2)">+</button>
             <span class="counter-display" id="cnt-2">0</span>
-            <span class="counter-label">sessions</span>
           </div>
+          <div class="method-desc">Write out the first letter of every single word in your script. Use this custom cheat sheet to force your brain to recall words.</div>
         </div>
       </div>
       <div class="method-item" style="--n:3">
         <div class="method-num">3</div>
         <div class="method-body">
-          <div class="method-title">Out-Loud Rehearsal with Role Play</div>
-          <div class="method-desc">Speak aloud with movement; simulate real responses to force active recall.</div>
-          <div class="method-counter">
+          <div class="method-title-row">
+            <div class="method-title">Record and Listen</div>
             <button class="counter-btn" onclick="incrementCounter(3)">+</button>
             <span class="counter-display" id="cnt-3">0</span>
-            <span class="counter-label">sessions</span>
           </div>
+          <div class="method-desc">Record yourself reading the text at a normal, conversational pace. Listen to this audio on a constant loop while doing daily chores.</div>
         </div>
       </div>
       <div class="method-item" style="--n:4">
         <div class="method-num">4</div>
         <div class="method-body">
-          <div class="method-title">Record &amp; Shadow</div>
-          <div class="method-desc">Record the script; play it back and speak along to train natural rhythm.</div>
-          <div class="method-counter">
+          <div class="method-title-row">
+            <div class="method-title">Tie to Movement</div>
             <button class="counter-btn" onclick="incrementCounter(4)">+</button>
             <span class="counter-display" id="cnt-4">0</span>
-            <span class="counter-label">sessions</span>
           </div>
+          <div class="method-desc">Assign specific physical actions or walking paths to the script. Your muscle memory will naturally trigger the right words to say.</div>
         </div>
       </div>
       <div class="method-item" style="--n:5">
         <div class="method-num">5</div>
         <div class="method-body">
-          <div class="method-title">Teach-Back / Compression</div>
-          <div class="method-desc">Explain it as if teaching someone; compress to half the words for deep understanding.</div>
-          <div class="method-counter">
+          <div class="method-title-row">
+            <div class="method-title">Handwrite the Text</div>
             <button class="counter-btn" onclick="incrementCounter(5)">+</button>
             <span class="counter-display" id="cnt-5">0</span>
-            <span class="counter-label">sessions</span>
           </div>
+          <div class="method-desc">Copy your entire script by hand over and over using pen and paper. This physical action deeply engages the brain to lock in the text.</div>
         </div>
       </div>
       <div class="method-item" style="--n:6">
         <div class="method-num">6</div>
         <div class="method-body">
-          <div class="method-title">The Memory Palace</div>
-          <div class="method-desc">Place each section at a location in a familiar space; walk it mentally to recall.</div>
-          <div class="method-counter">
+          <div class="method-title-row">
+            <div class="method-title">Focus on the "Why"</div>
             <button class="counter-btn" onclick="incrementCounter(6)">+</button>
             <span class="counter-display" id="cnt-6">0</span>
-            <span class="counter-label">sessions</span>
           </div>
+          <div class="method-desc">Understand the deep emotional logic behind every single sentence. Knowing character motivations makes the exact dialogue flow easily.</div>
         </div>
       </div>
       <div class="method-item" style="--n:7">
         <div class="method-num">7</div>
         <div class="method-body">
-          <div class="method-title">Sleep-Adjacent Review</div>
-          <div class="method-desc">Study right before sleep and upon waking; brain consolidates memory overnight.</div>
-          <div class="method-counter">
+          <div class="method-title-row">
+            <div class="method-title">Memory Palace</div>
             <button class="counter-btn" onclick="incrementCounter(7)">+</button>
             <span class="counter-display" id="cnt-7">0</span>
-            <span class="counter-label">sessions</span>
           </div>
+          <div class="method-desc">Visualize a familiar room and imagine walking through it mentally. Place each chunk of your text onto a specific piece of furniture.</div>
         </div>
       </div>
-      <div class="method-item last" style="--n:8">
+      <div class="method-item" style="--n:8">
         <div class="method-num">8</div>
         <div class="method-body">
-          <div class="method-title">Emotional Anchoring</div>
-          <div class="method-desc">Attach genuine feeling to each section; know the <em>why</em> so words follow naturally.</div>
-          <div class="method-counter">
+          <div class="method-title-row">
+            <div class="method-title">Strategic Sleep</div>
             <button class="counter-btn" onclick="incrementCounter(8)">+</button>
             <span class="counter-display" id="cnt-8">0</span>
-            <span class="counter-label">sessions</span>
           </div>
+          <div class="method-desc">Review your most difficult script sections right before you sleep. Your rested brain magically consolidates the memories overnight.</div>
+        </div>
+      </div>
+      <div class="method-item" style="--n:9">
+        <div class="method-num">9</div>
+        <div class="method-body">
+          <div class="method-title-row">
+            <div class="method-title">Speed Through</div>
+            <button class="counter-btn" onclick="incrementCounter(9)">+</button>
+            <span class="counter-display" id="cnt-9">0</span>
+          </div>
+          <div class="method-desc">Speak the entire text aloud as rapidly as you possibly can manage. This strips away acting and safely tests your pure memory recall.</div>
+        </div>
+      </div>
+      <div class="method-item last" style="--n:10">
+        <div class="method-num">10</div>
+        <div class="method-body">
+          <div class="method-title-row">
+            <div class="method-title">Visual Cueing</div>
+            <button class="counter-btn" onclick="incrementCounter(10)">+</button>
+            <span class="counter-display" id="cnt-10">0</span>
+          </div>
+          <div class="method-desc">Draw tiny doodles or symbols in the margins of your printed script. These small pictures will serve as visual triggers for the words.</div>
         </div>
       </div>
     </div>
@@ -436,7 +447,7 @@ function saveCounters(data) {
 
 function renderCounters() {
   const data = loadCounters();
-  for (let i = 1; i <= 8; i++) {
+  for (let i = 1; i <= 10; i++) {
     const el = document.getElementById('cnt-' + i);
     if (el) el.textContent = data[i] || 0;
   }
@@ -458,9 +469,9 @@ function incrementCounter(n) {
 }
 
 function resetAllCounters() {
-  if (!confirm('Reset all 8 session counts?')) return;
+  if (!confirm('Reset all 10 session counts?')) return;
   saveCounters({});
-  for (let i = 1; i <= 8; i++) {
+  for (let i = 1; i <= 10; i++) {
     const el = document.getElementById('cnt-' + i);
     if (el) el.textContent = 0;
   }
