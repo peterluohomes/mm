@@ -591,6 +591,7 @@ const DATA = [
     id: "pinnacle",
     emoji: "🏛️",
     title: "PINNACLE LISTING SYSTEM",
+    subtitle: "Your blueprint to success",
     cue: "Strong, measured confidence. You\u2019re presenting a system, not selling.",
     lines: [
       { anchor: "REFUSE / CHANCE", script: "I refuse to leave your maximum value to chance. We follow a disciplined, proven system built on three strategic pillars that deliver the highest possible price and the strongest terms." },
@@ -682,12 +683,26 @@ const DATA = [
   }
 ];
 
+// Build expanded data: inject section title, subtitle, and check-in as practisable lines
+const EXPANDED_DATA = DATA.map(section => {
+  const expanded = [];
+  // Section title as a line
+  expanded.push({ anchor: section.emoji + ' ' + section.title, script: section.title + (section.subtitle ? ' — ' + section.subtitle : ''), isHeader: true });
+  // Original script lines
+  section.lines.forEach(line => expanded.push(line));
+  // Check-in as a line — unique per section
+  if (section.checkin) {
+    expanded.push({ anchor: '✅ ' + section.title, script: section.checkin, isCheckin: true });
+  }
+  return { ...section, expandedLines: expanded };
+});
+
 // Build flat anchor list for quiz
 const ALL_ANCHORS = [];
-DATA.forEach(section => {
-  section.lines.forEach(line => {
+EXPANDED_DATA.forEach(section => {
+  section.expandedLines.forEach(line => {
     if (line.anchor) {
-      ALL_ANCHORS.push({ ...line, sectionTitle: section.title, sectionEmoji: section.emoji });
+      ALL_ANCHORS.push({ ...line, sectionTitle: section.title, sectionEmoji: section.emoji, sectionSubtitle: section.subtitle || '' });
     }
   });
 });
@@ -805,7 +820,7 @@ function renderQuiz() {
       <div class="score-bar">
         <div><div class="score-label">Score</div><div class="score-value">${correct}</div></div>
         <div><div class="score-label">Question</div><div class="score-value">${quizState.index + 1}/${total}</div></div>
-        <div class="score-detail">${current.sectionEmoji} ${current.sectionTitle}</div>
+        <div class="score-detail">${current.sectionEmoji} ${current.sectionTitle}${current.sectionSubtitle ? `<div style="font-size:11px;color:var(--blue);margin-top:4px;font-style:italic;">${current.sectionSubtitle}</div>` : ''}</div>
       </div>
       <div class="quiz-section-label">What anchor comes next?</div>
       <div class="quiz-prompt">${quizState.index === 0 ? 'First anchor?' : `After: ${ALL_ANCHORS[quizState.index - 1].anchor}`}</div>
@@ -854,16 +869,15 @@ function renderFill() {
         <button class="fill-ctrl-btn ${fillDifficulty===6?'active':''}" onclick="fillDifficulty=6;render();">★★★★★★</button>
       </div>
       <p style="text-align:center;font-size:13px;color:var(--gray);margin-bottom:24px;">Click blanks to reveal. Try to recall before clicking.</p>
-      ${DATA.map(section => `
+      ${EXPANDED_DATA.map(section => `
         <div class="fill-card">
-          <div class="fill-section-tag">${section.emoji} ${section.title}</div>
-          ${section.subtitle ? `<div class="section-subtitle" style="font-size:13px;margin-bottom:12px;">${section.subtitle}</div>` : ''}
-          ${section.lines.map(line => {
+          ${section.expandedLines.map(line => {
             if (line.type === 'stage') return `<div class="stage-dir">(${line.text})</div>`;
             let html = '';
             if (line.beat) html += `<div class="beat-label">${line.beat}</div>`;
+            const anchorClass = line.isHeader ? 'fill-anchor" style="background:var(--navy);color:var(--white);font-size:13px;padding:4px 10px;' : line.isCheckin ? 'fill-anchor" style="background:rgba(212,118,10,0.15);color:var(--orange);' : 'fill-anchor';
             html += `<div style="margin:8px 0;">
-              <span class="fill-anchor">${line.anchor}</span>
+              <span class="${anchorClass}">${line.anchor}</span>
               <div class="fill-text">${blankify(line.script, fillDifficulty)}</div>
             </div>`;
             return html;
@@ -903,16 +917,17 @@ function firstLetterify(t){
 
 function renderFirstLetter(){
   return '<div class="fl-container"><p style="text-align:center;font-size:13px;color:var(--gray);margin-bottom:24px;">First letter shown, rest hidden. Click a word to reveal it. Practice recalling from just the first letters.</p>'+
-  DATA.map(function(section){
-    return '<div class="fl-card"><div class="fill-section-tag">'+section.emoji+' '+section.title+'</div>'+
-    (section.subtitle ? '<div class="section-subtitle" style="font-size:13px;margin-bottom:12px;">'+section.subtitle+'</div>' : '')+
-    section.lines.map(function(line){
+  EXPANDED_DATA.map(function(section){
+    return '<div class="fl-card">'+
+    section.expandedLines.map(function(line){
       if(!line.anchor) return '';
       var h='';
       if(line.beat) h+='<div class="beat-label">'+line.beat+'</div>';
-      h+='<div style="margin:12px 0;"><span class="fill-anchor">'+line.anchor+'</span><div class="fl-text">'+firstLetterify(line.script)+'</div></div>';
+      var anchorStyle = line.isHeader ? 'background:var(--navy);color:var(--white);font-size:13px;padding:4px 10px;' : line.isCheckin ? 'background:rgba(212,118,10,0.15);color:var(--orange);' : '';
+      h+='<div style="margin:12px 0;"><span class="fill-anchor" style="'+anchorStyle+'">'+line.anchor+'</span><div class="fl-text">'+firstLetterify(line.script)+'</div></div>';
       return h;
-    }).join('')+'</div>';
+    }).join('')+
+    '</div>';
   }).join('')+'</div>';
 }
 
@@ -920,6 +935,7 @@ function renderTeleprompter() {
   const allLines = [];
   DATA.forEach(section => {
     allLines.push({ type: 'section', text: `${section.emoji} ${section.title}` });
+    if (section.subtitle) allLines.push({ type: 'subtitle', text: section.subtitle });
     section.lines.forEach(line => {
       if (line.type === 'stage') {
         allLines.push({ type: 'stage', text: `(${line.text})` });
@@ -961,7 +977,7 @@ function tpGoTo(idx) {
 
 function tpNext() {
   const allLines = [];
-  DATA.forEach(s => { allLines.push({}); s.lines.forEach(() => allLines.push({})); if (s.checkin) allLines.push({}); });
+  DATA.forEach(s => { allLines.push({}); if (s.subtitle) allLines.push({}); s.lines.forEach(() => allLines.push({})); if (s.checkin) allLines.push({}); });
   if (tpState.currentLine < allLines.length - 1) tpState.currentLine++;
   render();
   scrollTpActive();
