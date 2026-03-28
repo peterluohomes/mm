@@ -591,14 +591,10 @@ function togglePlay(phaseNum) {
 }
 
 function flushListenTime() {
-  if (currentAudio && lastTimeSample) {
+  if (currentAudio && lastAudioPos >= 0 && lastTimeSample) {
     var elapsed = currentAudio.currentTime - lastAudioPos;
-    // Fallback: if audio position didn't advance (iOS quirk), use wall-clock but cap at 120s
-    if (elapsed <= 0) {
-      elapsed = (Date.now() - lastTimeSample) / 1000;
-      if (elapsed > 120) elapsed = 0; // discard suspicious jumps
-    }
-    if (elapsed > 0 && elapsed < 3600) addListenTime(elapsed);
+    // Only count if audio actually advanced (rules out iOS screen-off freeze)
+    if (elapsed > 0.5 && elapsed < 3600) addListenTime(elapsed);
   }
   lastTimeSample = 0;
   lastAudioPos = 0;
@@ -765,28 +761,23 @@ document.addEventListener('visibilitychange', () => {
     flushListenTime();
     saveResumeState();
   } else if (document.visibilityState === 'visible') {
-    // When returning, check if audio is dead (iOS kills it)
+    // When returning from background, check audio state and update UI
     if (currentPhase && currentAudio) {
       // Test if audio object is still alive
       const isAlive = !currentAudio.paused || currentAudio.readyState > 0;
       if (!isAlive) {
-        // Audio was killed — recreate from saved state
+        // Audio was killed by iOS — reset to paused state, user can tap play
         const state = loadResumeState();
         if (state) {
-          createAudioWithResume(state.phase, state.speed, state.position, state.wasPlaying);
+          createAudioWithResume(state.phase, state.speed, state.position, false);
         }
-      } else if (currentAudio.paused) {
-        // Audio exists but was paused by iOS — try to resume
+      } else if (!currentAudio.paused) {
+        // Audio is still actually playing — restart time tracking from current position
         lastTimeSample = Date.now();
         lastAudioPos = currentAudio.currentTime || 0;
-        currentAudio.play().then(() => {
-          startProgressLoop();
-          render();
-        }).catch(() => {
-          lastTimeSample = 0;
-          lastAudioPos = 0;
-        });
+        startProgressLoop();
       }
+      render();
     }
   }
 });
