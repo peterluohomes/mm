@@ -530,6 +530,10 @@ let prevWallTime  = null;
 let unsavedSec    = 0;
 let userInitiatedPause = false;
 
+// Saved when going hidden so we can recover the gap on return
+let hiddenAtWall  = null;  // wall-clock timestamp when screen turned off
+let wasPlayingWhenHidden = false;
+
 const MAX_CT_DELTA = 1.5;   // currentTime jump larger than this = seek/loop
 const MAX_GAP_SEC  = 7200;  // never credit more than 2h in one gap
 const SAVE_EVERY   = 5;     // flush localStorage every N accumulated seconds
@@ -552,9 +556,13 @@ function togglePlay(phaseNum) {
   if (currentPhase === phaseNum && currentAudio) {
     if (currentAudio.paused) {
       userInitiatedPause = false;
+      hiddenAtWall = null;
+      wasPlayingWhenHidden = false;
       currentAudio.play();
     } else {
       userInitiatedPause = true;
+      hiddenAtWall = null;
+      wasPlayingWhenHidden = false;
       currentAudio.pause();
     }
     return;
@@ -642,8 +650,14 @@ function attachAudioHandlers(audio, file) {
     render();
   });
 
-  // Pause event — flush and save
+  // Pause event — save gap info for screen-off recovery, then flush
   audio.addEventListener('pause', () => {
+    // iOS fires pause BEFORE visibilitychange on screen-off
+    // Save wall-clock so we can recover the gap when screen turns back on
+    if (!userInitiatedPause && prevWallTime !== null) {
+      hiddenAtWall = Date.now();
+      wasPlayingWhenHidden = true;
+    }
     flushAll();
     if (!userInitiatedPause) {
       cancelAnimationFrame(rafId);
@@ -670,18 +684,6 @@ function flushAll() {
   saveStats();
   updateStatsUI();
   cancelAnimationFrame(rafId);
-}
-
-// Recover gap when screen turns back on (wall-clock gap recovery)
-function recoverGap() {
-  if (!currentAudio || currentAudio.paused || prevWallTime === null) return;
-  const wallDelta = (Date.now() - prevWallTime) / 1000;
-  if (wallDelta > MAX_CT_DELTA && wallDelta <= MAX_GAP_SEC) {
-    addListenTime(wallDelta);
-    saveStats();
-  }
-  prevAudioTime = null;
-  prevWallTime  = null;
 }
 
 function startProgressLoop() {
@@ -804,20 +806,40 @@ function tryResume() {
   createAudioWithResume(state.phase, state.speed, state.position, state.wasPlaying);
 }
 
-// ── Visibility / lifecycle: recover gap on return, flush on hide ──
+// ── Visibility / lifecycle: save gap info on hide, recover on return ──
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
+    // BEFORE flushing, remember wall-clock and playing state for gap recovery
+    if (currentAudio && !currentAudio.paused && prevWallTime !== null) {
+      hiddenAtWall = Date.now();
+      wasPlayingWhenHidden = true;
+    } else {
+      hiddenAtWall = null;
+      wasPlayingWhenHidden = false;
+    }
     flushAll();
   } else {
-    recoverGap();
+    // Screen back on — recover the gap
+    if (wasPlayingWhenHidden && hiddenAtWall) {
+      const gapSec = (Date.now() - hiddenAtWall) / 1000;
+      if (gapSec > 0.5 && gapSec <= MAX_GAP_SEC) {
+        addListenTime(gapSec);
+        saveStats();
+      }
+      hiddenAtWall = null;
+      wasPlayingWhenHidden = false;
+    }
+
     if (currentPhase && currentAudio) {
       const isAlive = !currentAudio.paused || currentAudio.readyState > 0;
       if (!isAlive) {
+        // Audio was killed by iOS — recreate at saved position
         const state = loadResumeState();
         if (state) {
           createAudioWithResume(state.phase, state.speed, state.position, !userInitiatedPause);
         }
       } else if (currentAudio.paused && !userInitiatedPause) {
+        // Interrupted by phone call/alarm — try to resume
         currentAudio.play().catch(() => { render(); });
       }
       render();
@@ -825,9 +847,28 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-window.addEventListener('focus', recoverGap);
+window.addEventListener('focus', () => {
+  // Also try gap recovery on focus (some iOS versions fire focus without visibilitychange)
+  if (wasPlayingWhenHidden && hiddenAtWall) {
+    const gapSec = (Date.now() - hiddenAtWall) / 1000;
+    if (gapSec > 0.5 && gapSec <= MAX_GAP_SEC) {
+      addListenTime(gapSec);
+      saveStats();
+    }
+    hiddenAtWall = null;
+    wasPlayingWhenHidden = false;
+  }
+});
+
 window.addEventListener('pagehide', flushAll);
-window.addEventListener('blur', flushAll);
+window.addEventListener('blur', () => {
+  // Save gap info before flushing
+  if (currentAudio && !currentAudio.paused && prevWallTime !== null) {
+    hiddenAtWall = Date.now();
+    wasPlayingWhenHidden = true;
+  }
+  flushAll();
+});
 window.addEventListener('beforeunload', flushAll);
 
 // ── Init ──
