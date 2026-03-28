@@ -384,11 +384,15 @@ function recordPlay(file) {
 }
 
 function addListenTime(sec) {
+  if (sec <= 0) return;
   stats.totalSeconds = (stats.totalSeconds || 0) + sec;
-  // Also mark today for streak tracking
   const today = new Date().toISOString().slice(0,10);
   if (!stats.days.includes(today)) stats.days.push(today);
-  saveStats();
+  unsavedSec += sec;
+  if (unsavedSec >= SAVE_EVERY) {
+    unsavedSec = 0;
+    saveStats();
+  }
   updateStatsUI();
 }
 
@@ -511,6 +515,7 @@ function selectSpeed(phaseNum, speedIdx) {
   if (currentPhase === phaseNum && currentAudio) {
     userInitiatedPause = true;
     currentAudio.pause();
+    flushAll();
     currentAudio = null;
     currentPhase = null;
   }
@@ -519,9 +524,15 @@ function selectSpeed(phaseNum, speedIdx) {
   if (wasPlaying) togglePlay(phaseNum);
 }
 
-let lastTimeSample = 0;
-let lastAudioPos = 0;
-let userInitiatedPause = false; // true when user tapped pause; false = iOS interrupted
+// ── Time tracking (hybrid currentTime-delta + wall-clock gap recovery) ──
+let prevAudioTime = null;
+let prevWallTime  = null;
+let unsavedSec    = 0;
+let userInitiatedPause = false;
+
+const MAX_CT_DELTA = 1.5;   // currentTime jump larger than this = seek/loop
+const MAX_GAP_SEC  = 7200;  // never credit more than 2h in one gap
+const SAVE_EVERY   = 5;     // flush localStorage every N accumulated seconds
 
 function togglePlay(phaseNum) {
   const si = selectedSpeed[phaseNum] || 0;
@@ -532,7 +543,7 @@ function togglePlay(phaseNum) {
   if (currentPhase && currentPhase !== phaseNum && currentAudio) {
     userInitiatedPause = true;
     currentAudio.pause();
-    flushListenTime();
+    flushAll();
     currentAudio = null;
     currentPhase = null;
   }
@@ -542,88 +553,135 @@ function togglePlay(phaseNum) {
     if (currentAudio.paused) {
       userInitiatedPause = false;
       currentAudio.play();
-      lastTimeSample = Date.now();
-      lastAudioPos = currentAudio.currentTime || 0;
-      startProgressLoop();
-      saveResumeState();
     } else {
       userInitiatedPause = true;
       currentAudio.pause();
-      flushListenTime();
-      cancelAnimationFrame(rafId);
-      saveResumeState();
     }
-    render();
     return;
   }
 
-  // New playback — clear old resume state
+  // New playback
   userInitiatedPause = false;
   clearResumeState();
   currentAudio = new Audio(url);
   currentPhase = phaseNum;
-  lastTimeSample = Date.now();
-  lastAudioPos = 0;
 
   currentAudio.addEventListener('loadedmetadata', () => {
     const durEl = document.getElementById('tdur-' + phaseNum);
     if (durEl) durEl.textContent = fmtTime(currentAudio.duration);
   });
 
-  attachInterruptionHandlers(currentAudio, file);
+  attachAudioHandlers(currentAudio, file);
 
   currentAudio.play().then(() => {
-    render();
-    startProgressLoop();
     saveResumeState();
   }).catch(e => {
     console.error('Playback failed:', e);
     currentAudio = null;
     currentPhase = null;
+    render();
   });
 }
 
-// ── Interruption handling (phone call, alarm, Siri, reminder) ──
-function attachInterruptionHandlers(audio, file) {
-  // When paused externally (phone call, alarm, Siri), auto-resume after interruption
+// ── Audio event handlers (lpen-style hybrid timeupdate tracking) ──
+function attachAudioHandlers(audio, file) {
+  let lastPosSave = 0;
+
+  // Core: timeupdate fires ~4x/sec — diff currentTime tick-to-tick
+  audio.addEventListener('timeupdate', () => {
+    const wallNow = Date.now();
+
+    // Save resume position every 3s
+    if (wallNow - lastPosSave >= 3000) {
+      saveResumeState();
+      lastPosSave = wallNow;
+    }
+
+    // Update progress UI
+    const fill = document.getElementById('pfill-' + currentPhase);
+    const tcur = document.getElementById('tcur-' + currentPhase);
+    if (fill && audio.duration) {
+      fill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+    }
+    if (tcur) tcur.textContent = fmtTime(audio.currentTime);
+
+    if (audio.paused) return;
+
+    const ctNow = audio.currentTime;
+
+    if (prevAudioTime !== null && prevWallTime !== null) {
+      const ctDelta   = ctNow - prevAudioTime;
+      const wallDelta = (wallNow - prevWallTime) / 1000;
+
+      if (ctDelta > 0 && ctDelta <= MAX_CT_DELTA) {
+        // Normal tick — screen on, timeupdate firing regularly
+        addListenTime(ctDelta);
+      } else if (wallDelta > MAX_CT_DELTA && wallDelta <= MAX_GAP_SEC) {
+        // Gap detected (screen-off / throttled)
+        // Take min(wallDelta, ctGap) to avoid over-counting seeks
+        const ctGap = Math.abs(ctDelta);
+        addListenTime(Math.min(wallDelta, ctGap > 0 ? ctGap : wallDelta));
+      }
+    }
+
+    prevAudioTime = ctNow;
+    prevWallTime  = wallNow;
+  });
+
+  // Seeking resets anchors so position jumps aren't counted as listen time
+  audio.addEventListener('seeked', () => {
+    prevAudioTime = audio.currentTime;
+    prevWallTime  = Date.now();
+  });
+
+  // Play event — reset anchors, update UI
+  audio.addEventListener('play', () => {
+    prevAudioTime = audio.currentTime;
+    prevWallTime  = Date.now();
+    startProgressLoop();
+    render();
+  });
+
+  // Pause event — flush and save
   audio.addEventListener('pause', () => {
-    flushListenTime();
-    saveResumeState();
+    flushAll();
     if (!userInitiatedPause) {
-      // External interruption — update UI to show paused, attempt resume when possible
       cancelAnimationFrame(rafId);
       render();
     }
   });
 
-  // 'play' event fires when audio resumes after interruption or user tap
-  audio.addEventListener('play', () => {
-    lastTimeSample = Date.now();
-    lastAudioPos = audio.currentTime || 0;
-    startProgressLoop();
-    render();
-  });
-
+  // Ended event — record play, loop
   audio.addEventListener('ended', () => {
-    flushListenTime();
+    flushAll();
     recordPlay(file);
     userInitiatedPause = false;
     audio.currentTime = 0;
-    lastTimeSample = Date.now();
-    lastAudioPos = 0;
     audio.play();
-    render();
   });
 }
 
-function flushListenTime() {
-  if (currentAudio && lastAudioPos >= 0 && lastTimeSample) {
-    var elapsed = currentAudio.currentTime - lastAudioPos;
-    // Only count if audio actually advanced (rules out iOS screen-off freeze)
-    if (elapsed > 0.5 && elapsed < 3600) addListenTime(elapsed);
+// Flush all tracking state and save to localStorage
+function flushAll() {
+  prevAudioTime = null;
+  prevWallTime  = null;
+  unsavedSec    = 0;
+  saveResumeState();
+  saveStats();
+  updateStatsUI();
+  cancelAnimationFrame(rafId);
+}
+
+// Recover gap when screen turns back on (wall-clock gap recovery)
+function recoverGap() {
+  if (!currentAudio || currentAudio.paused || prevWallTime === null) return;
+  const wallDelta = (Date.now() - prevWallTime) / 1000;
+  if (wallDelta > MAX_CT_DELTA && wallDelta <= MAX_GAP_SEC) {
+    addListenTime(wallDelta);
+    saveStats();
   }
-  lastTimeSample = 0;
-  lastAudioPos = 0;
+  prevAudioTime = null;
+  prevWallTime  = null;
 }
 
 function startProgressLoop() {
@@ -715,15 +773,9 @@ function createAudioWithResume(phaseNum, speedIdx, position, autoPlay) {
     if (tcur) tcur.textContent = fmtTime(position);
 
     if (autoPlay) {
-      lastTimeSample = Date.now();
-      lastAudioPos = currentAudio.currentTime || position;
       currentAudio.play().then(() => {
         render();
-        startProgressLoop();
       }).catch(() => {
-        // iOS blocked autoplay — user will see play button, position is correct
-        lastTimeSample = 0;
-        lastAudioPos = 0;
         render();
       });
     } else {
@@ -734,13 +786,10 @@ function createAudioWithResume(phaseNum, speedIdx, position, autoPlay) {
   // Try multiple events — iOS is inconsistent about which fires
   currentAudio.addEventListener('loadedmetadata', doSeek, { once: true });
   currentAudio.addEventListener('canplay', doSeek, { once: true });
-
-  // Fallback: if neither fires within 2 seconds, force seek
   setTimeout(doSeek, 2000);
 
-  attachInterruptionHandlers(currentAudio, file);
+  attachAudioHandlers(currentAudio, file);
 
-  // Kick off loading
   currentAudio.load();
 }
 
@@ -755,73 +804,31 @@ function tryResume() {
   createAudioWithResume(state.phase, state.speed, state.position, state.wasPlaying);
 }
 
-// Save state periodically while playing
-setInterval(() => {
-  if (currentAudio && !currentAudio.paused) {
-    saveResumeState();
-  }
-}, 2000);
-
-// Flush accumulated listen time every 5 seconds so minimal time is lost when iOS freezes JS
-setInterval(() => {
-  if (currentAudio && !currentAudio.paused && lastTimeSample) {
-    var pos = currentAudio.currentTime || 0;
-    var elapsed = pos - lastAudioPos;
-    if (elapsed > 0.5 && elapsed < 60) {
-      addListenTime(elapsed);
-    }
-    lastTimeSample = Date.now();
-    lastAudioPos = pos;
-  }
-}, 5000);
-
-// Save state when app goes to background or closes
+// ── Visibility / lifecycle: recover gap on return, flush on hide ──
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') {
-    flushListenTime();
-    saveResumeState();
-  } else if (document.visibilityState === 'visible') {
+  if (document.hidden) {
+    flushAll();
+  } else {
+    recoverGap();
     if (currentPhase && currentAudio) {
-      // Test if audio object is still alive
       const isAlive = !currentAudio.paused || currentAudio.readyState > 0;
       if (!isAlive) {
-        // Audio was killed by iOS — recreate at saved position
         const state = loadResumeState();
         if (state) {
-          // Auto-resume if it wasn't a user-initiated pause
           createAudioWithResume(state.phase, state.speed, state.position, !userInitiatedPause);
         }
       } else if (currentAudio.paused && !userInitiatedPause) {
-        // Audio paused by interruption (phone call, alarm) — try to resume
-        currentAudio.play().then(() => {
-          lastTimeSample = Date.now();
-          lastAudioPos = currentAudio.currentTime || 0;
-          startProgressLoop();
-          render();
-        }).catch(() => {
-          // Can't auto-resume, user will need to tap play
-          render();
-        });
-      } else if (!currentAudio.paused) {
-        // Still playing — restart time tracking
-        lastTimeSample = Date.now();
-        lastAudioPos = currentAudio.currentTime || 0;
-        startProgressLoop();
+        currentAudio.play().catch(() => { render(); });
       }
       render();
     }
   }
 });
 
-window.addEventListener('beforeunload', () => {
-  flushListenTime();
-  saveResumeState();
-});
-
-window.addEventListener('pagehide', () => {
-  flushListenTime();
-  saveResumeState();
-});
+window.addEventListener('focus', recoverGap);
+window.addEventListener('pagehide', flushAll);
+window.addEventListener('blur', flushAll);
+window.addEventListener('beforeunload', flushAll);
 
 // ── Init ──
 render();
