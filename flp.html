@@ -509,6 +509,7 @@ function togglePhase(num) {
 function selectSpeed(phaseNum, speedIdx) {
   const wasPlaying = currentPhase === phaseNum && currentAudio && !currentAudio.paused;
   if (currentPhase === phaseNum && currentAudio) {
+    userInitiatedPause = true;
     currentAudio.pause();
     currentAudio = null;
     currentPhase = null;
@@ -520,6 +521,7 @@ function selectSpeed(phaseNum, speedIdx) {
 
 let lastTimeSample = 0;
 let lastAudioPos = 0;
+let userInitiatedPause = false; // true when user tapped pause; false = iOS interrupted
 
 function togglePlay(phaseNum) {
   const si = selectedSpeed[phaseNum] || 0;
@@ -528,6 +530,7 @@ function togglePlay(phaseNum) {
 
   // If clicking a different phase, stop current
   if (currentPhase && currentPhase !== phaseNum && currentAudio) {
+    userInitiatedPause = true;
     currentAudio.pause();
     flushListenTime();
     currentAudio = null;
@@ -537,12 +540,14 @@ function togglePlay(phaseNum) {
   // If same phase, toggle
   if (currentPhase === phaseNum && currentAudio) {
     if (currentAudio.paused) {
+      userInitiatedPause = false;
       currentAudio.play();
       lastTimeSample = Date.now();
       lastAudioPos = currentAudio.currentTime || 0;
       startProgressLoop();
       saveResumeState();
     } else {
+      userInitiatedPause = true;
       currentAudio.pause();
       flushListenTime();
       cancelAnimationFrame(rafId);
@@ -553,6 +558,7 @@ function togglePlay(phaseNum) {
   }
 
   // New playback — clear old resume state
+  userInitiatedPause = false;
   clearResumeState();
   currentAudio = new Audio(url);
   currentPhase = phaseNum;
@@ -564,20 +570,7 @@ function togglePlay(phaseNum) {
     if (durEl) durEl.textContent = fmtTime(currentAudio.duration);
   });
 
-  // iOS fires 'pause' when suspending the app — save state immediately
-  currentAudio.addEventListener('pause', () => {
-    saveResumeState();
-  });
-
-  currentAudio.addEventListener('ended', () => {
-    flushListenTime();
-    recordPlay(file);
-    currentAudio.currentTime = 0;
-    lastTimeSample = Date.now();
-    lastAudioPos = 0;
-    currentAudio.play();
-    render();
-  });
+  attachInterruptionHandlers(currentAudio, file);
 
   currentAudio.play().then(() => {
     render();
@@ -587,6 +580,39 @@ function togglePlay(phaseNum) {
     console.error('Playback failed:', e);
     currentAudio = null;
     currentPhase = null;
+  });
+}
+
+// ── Interruption handling (phone call, alarm, Siri, reminder) ──
+function attachInterruptionHandlers(audio, file) {
+  // When paused externally (phone call, alarm, Siri), auto-resume after interruption
+  audio.addEventListener('pause', () => {
+    flushListenTime();
+    saveResumeState();
+    if (!userInitiatedPause) {
+      // External interruption — update UI to show paused, attempt resume when possible
+      cancelAnimationFrame(rafId);
+      render();
+    }
+  });
+
+  // 'play' event fires when audio resumes after interruption or user tap
+  audio.addEventListener('play', () => {
+    lastTimeSample = Date.now();
+    lastAudioPos = audio.currentTime || 0;
+    startProgressLoop();
+    render();
+  });
+
+  audio.addEventListener('ended', () => {
+    flushListenTime();
+    recordPlay(file);
+    userInitiatedPause = false;
+    audio.currentTime = 0;
+    lastTimeSample = Date.now();
+    lastAudioPos = 0;
+    audio.play();
+    render();
   });
 }
 
@@ -661,10 +687,12 @@ function createAudioWithResume(phaseNum, speedIdx, position, autoPlay) {
 
   // Kill any existing audio cleanly
   if (currentAudio) {
+    userInitiatedPause = true;
     try { currentAudio.pause(); } catch(e) {}
     currentAudio = null;
   }
 
+  userInitiatedPause = false;
   currentAudio = new Audio(url);
   currentAudio.preload = 'auto';
   currentPhase = phaseNum;
@@ -710,15 +738,7 @@ function createAudioWithResume(phaseNum, speedIdx, position, autoPlay) {
   // Fallback: if neither fires within 2 seconds, force seek
   setTimeout(doSeek, 2000);
 
-  currentAudio.addEventListener('ended', () => {
-    flushListenTime();
-    recordPlay(file);
-    currentAudio.currentTime = 0;
-    lastTimeSample = Date.now();
-    lastAudioPos = 0;
-    currentAudio.play();
-    render();
-  });
+  attachInterruptionHandlers(currentAudio, file);
 
   // Kick off loading
   currentAudio.load();
@@ -742,18 +762,18 @@ setInterval(() => {
   }
 }, 2000);
 
-// Flush accumulated listen time every 10 seconds so it's not lost on crash/kill
+// Flush accumulated listen time every 5 seconds so minimal time is lost when iOS freezes JS
 setInterval(() => {
   if (currentAudio && !currentAudio.paused && lastTimeSample) {
     var pos = currentAudio.currentTime || 0;
     var elapsed = pos - lastAudioPos;
-    if (elapsed > 0 && elapsed < 120) {
+    if (elapsed > 0.5 && elapsed < 60) {
       addListenTime(elapsed);
     }
     lastTimeSample = Date.now();
     lastAudioPos = pos;
   }
-}, 10000);
+}, 5000);
 
 // Save state when app goes to background or closes
 document.addEventListener('visibilitychange', () => {
@@ -761,18 +781,29 @@ document.addEventListener('visibilitychange', () => {
     flushListenTime();
     saveResumeState();
   } else if (document.visibilityState === 'visible') {
-    // When returning from background, check audio state and update UI
     if (currentPhase && currentAudio) {
       // Test if audio object is still alive
       const isAlive = !currentAudio.paused || currentAudio.readyState > 0;
       if (!isAlive) {
-        // Audio was killed by iOS — reset to paused state, user can tap play
+        // Audio was killed by iOS — recreate at saved position
         const state = loadResumeState();
         if (state) {
-          createAudioWithResume(state.phase, state.speed, state.position, false);
+          // Auto-resume if it wasn't a user-initiated pause
+          createAudioWithResume(state.phase, state.speed, state.position, !userInitiatedPause);
         }
+      } else if (currentAudio.paused && !userInitiatedPause) {
+        // Audio paused by interruption (phone call, alarm) — try to resume
+        currentAudio.play().then(() => {
+          lastTimeSample = Date.now();
+          lastAudioPos = currentAudio.currentTime || 0;
+          startProgressLoop();
+          render();
+        }).catch(() => {
+          // Can't auto-resume, user will need to tap play
+          render();
+        });
       } else if (!currentAudio.paused) {
-        // Audio is still actually playing — restart time tracking from current position
+        // Still playing — restart time tracking
         lastTimeSample = Date.now();
         lastAudioPos = currentAudio.currentTime || 0;
         startProgressLoop();
