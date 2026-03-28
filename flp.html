@@ -385,6 +385,9 @@ function recordPlay(file) {
 
 function addListenTime(sec) {
   stats.totalSeconds = (stats.totalSeconds || 0) + sec;
+  // Also mark today for streak tracking
+  const today = new Date().toISOString().slice(0,10);
+  if (!stats.days.includes(today)) stats.days.push(today);
   saveStats();
   updateStatsUI();
 }
@@ -396,8 +399,9 @@ function getStreak() {
   for (let i = 1; i < days.length; i++) {
     const prev = new Date(days[i-1]);
     const curr = new Date(days[i]);
-    const diff = (prev - curr) / 86400000;
+    const diff = Math.round((prev - curr) / 86400000);
     if (diff === 1) streak++;
+    else if (diff === 0) continue; // duplicate day entry
     else break;
   }
   // Check if streak includes today or yesterday
@@ -515,6 +519,7 @@ function selectSpeed(phaseNum, speedIdx) {
 }
 
 let lastTimeSample = 0;
+let lastAudioPos = 0;
 
 function togglePlay(phaseNum) {
   const si = selectedSpeed[phaseNum] || 0;
@@ -534,6 +539,7 @@ function togglePlay(phaseNum) {
     if (currentAudio.paused) {
       currentAudio.play();
       lastTimeSample = Date.now();
+      lastAudioPos = currentAudio.currentTime || 0;
       startProgressLoop();
       saveResumeState();
     } else {
@@ -551,6 +557,7 @@ function togglePlay(phaseNum) {
   currentAudio = new Audio(url);
   currentPhase = phaseNum;
   lastTimeSample = Date.now();
+  lastAudioPos = 0;
 
   currentAudio.addEventListener('loadedmetadata', () => {
     const durEl = document.getElementById('tdur-' + phaseNum);
@@ -567,6 +574,7 @@ function togglePlay(phaseNum) {
     recordPlay(file);
     currentAudio.currentTime = 0;
     lastTimeSample = Date.now();
+    lastAudioPos = 0;
     currentAudio.play();
     render();
   });
@@ -583,11 +591,17 @@ function togglePlay(phaseNum) {
 }
 
 function flushListenTime() {
-  if (lastTimeSample) {
-    const elapsed = (Date.now() - lastTimeSample) / 1000;
+  if (currentAudio && lastTimeSample) {
+    var elapsed = currentAudio.currentTime - lastAudioPos;
+    // Fallback: if audio position didn't advance (iOS quirk), use wall-clock but cap at 120s
+    if (elapsed <= 0) {
+      elapsed = (Date.now() - lastTimeSample) / 1000;
+      if (elapsed > 120) elapsed = 0; // discard suspicious jumps
+    }
     if (elapsed > 0 && elapsed < 3600) addListenTime(elapsed);
-    lastTimeSample = 0;
   }
+  lastTimeSample = 0;
+  lastAudioPos = 0;
 }
 
 function startProgressLoop() {
@@ -678,11 +692,14 @@ function createAudioWithResume(phaseNum, speedIdx, position, autoPlay) {
 
     if (autoPlay) {
       lastTimeSample = Date.now();
+      lastAudioPos = currentAudio.currentTime || position;
       currentAudio.play().then(() => {
         render();
         startProgressLoop();
       }).catch(() => {
         // iOS blocked autoplay — user will see play button, position is correct
+        lastTimeSample = 0;
+        lastAudioPos = 0;
         render();
       });
     } else {
@@ -702,6 +719,7 @@ function createAudioWithResume(phaseNum, speedIdx, position, autoPlay) {
     recordPlay(file);
     currentAudio.currentTime = 0;
     lastTimeSample = Date.now();
+    lastAudioPos = 0;
     currentAudio.play();
     render();
   });
@@ -728,6 +746,19 @@ setInterval(() => {
   }
 }, 2000);
 
+// Flush accumulated listen time every 10 seconds so it's not lost on crash/kill
+setInterval(() => {
+  if (currentAudio && !currentAudio.paused && lastTimeSample) {
+    var pos = currentAudio.currentTime || 0;
+    var elapsed = pos - lastAudioPos;
+    if (elapsed > 0 && elapsed < 120) {
+      addListenTime(elapsed);
+    }
+    lastTimeSample = Date.now();
+    lastAudioPos = pos;
+  }
+}, 10000);
+
 // Save state when app goes to background or closes
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') {
@@ -747,10 +778,14 @@ document.addEventListener('visibilitychange', () => {
       } else if (currentAudio.paused) {
         // Audio exists but was paused by iOS — try to resume
         lastTimeSample = Date.now();
+        lastAudioPos = currentAudio.currentTime || 0;
         currentAudio.play().then(() => {
           startProgressLoop();
           render();
-        }).catch(() => {});
+        }).catch(() => {
+          lastTimeSample = 0;
+          lastAudioPos = 0;
+        });
       }
     }
   }
