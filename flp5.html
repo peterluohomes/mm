@@ -17,9 +17,7 @@
     --text-muted: #6B6B6B;
     --border: #E8E0D0;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   body {
     font-family: 'DM Sans', sans-serif;
     background: var(--cream);
@@ -27,8 +25,6 @@
     min-height: 100vh;
     -webkit-tap-highlight-color: transparent;
   }
-
-  /* ── Header ── */
   .header {
     background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
     padding: 28px 20px 24px;
@@ -46,24 +42,16 @@
   .header h1 {
     font-family: 'Playfair Display', serif;
     color: var(--cream);
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
+    font-size: 22px; font-weight: 600;
+    letter-spacing: 0.5px; margin-bottom: 4px;
   }
   .header p {
     color: var(--gold-light);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 2px; text-transform: uppercase;
   }
-
-  /* ── Stats Bar ── */
   .stats-bar {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
+    display: flex; justify-content: center; gap: 24px;
     padding: 12px 20px;
     background: var(--navy-dark);
     border-bottom: 1px solid rgba(184,149,42,0.2);
@@ -72,44 +60,28 @@
   .stat-val {
     font-family: 'Playfair Display', serif;
     color: var(--gold-light);
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 18px; font-weight: 700;
   }
   .stat-label {
     color: rgba(253,250,244,0.5);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
   }
-  .stats-reset {
-    display: flex;
-    align-items: center;
-    align-self: center;
-    margin-left: 4px;
-  }
+  .stats-reset { display: flex; align-items: center; align-self: center; margin-left: 4px; }
   .stats-reset button {
     background: none;
     border: 1px solid rgba(184,149,42,0.3);
     border-radius: 6px;
     color: rgba(253,250,244,0.4);
     font-family: 'DM Sans', sans-serif;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    padding: 4px 10px;
-    cursor: pointer;
+    font-size: 10px; font-weight: 500; letter-spacing: 0.5px;
+    padding: 4px 10px; cursor: pointer;
     transition: all 0.2s;
     -webkit-tap-highlight-color: transparent;
   }
-  .stats-reset button:active {
-    color: var(--gold-light);
-    border-color: var(--gold);
-  }
+  .stats-reset button:active { color: var(--gold-light); border-color: var(--gold); }
 
-  /* ── Content ── */
   .content { padding: 16px; max-width: 600px; margin: 0 auto; }
 
-  /* ── Phase Card ── */
   .phase-card {
     background: #fff;
     border-radius: 12px;
@@ -122,15 +94,10 @@
     border-color: var(--gold);
     box-shadow: 0 4px 20px rgba(184,149,42,0.15);
   }
-
   .phase-header {
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    cursor: pointer;
-    gap: 14px;
-    user-select: none;
-    -webkit-user-select: none;
+    display: flex; align-items: center;
+    padding: 16px; cursor: pointer; gap: 14px;
+    user-select: none; -webkit-user-select: none;
   }
   .phase-num {
     width: 38px; height: 38px;
@@ -139,90 +106,72 @@
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-family: 'Playfair Display', serif;
-    font-size: 16px; font-weight: 700;
-    flex-shrink: 0;
+    font-size: 16px; font-weight: 700; flex-shrink: 0;
   }
-  .phase-card.active .phase-num {
-    background: var(--gold);
-    color: #fff;
-  }
+  .phase-card.active .phase-num { background: var(--gold); color: #fff; }
   .phase-info { flex: 1; min-width: 0; }
   .phase-title {
     font-family: 'Playfair Display', serif;
-    font-size: 16px; font-weight: 600;
-    color: var(--navy);
+    font-size: 16px; font-weight: 600; color: var(--navy);
   }
-  .phase-meta {
-    font-size: 12px; color: var(--text-muted);
-    margin-top: 2px;
-  }
+  .phase-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
   .phase-toggle {
     width: 28px; height: 28px;
     display: flex; align-items: center; justify-content: center;
     color: var(--text-muted);
-    transition: transform 0.3s;
-    flex-shrink: 0;
+    transition: transform 0.3s; flex-shrink: 0;
   }
   .phase-card.open .phase-toggle { transform: rotate(180deg); }
 
-  /* ── Expandable Body ── */
-  .phase-body {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.35s ease;
-  }
-  .phase-body-inner {
-    padding: 0 16px 16px;
-  }
+  .phase-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+  .phase-body-inner { padding: 0 16px 16px; }
 
-  /* ── Speed Selector ── */
-  .speed-row {
-    display: flex; gap: 8px; margin-bottom: 14px;
-  }
-  .speed-btn {
-    flex: 1;
-    padding: 10px 0;
+  .track-item {
+    background: var(--cream);
     border: 1.5px solid var(--border);
-    border-radius: 8px;
-    background: var(--cream);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 600;
-    color: var(--text-muted);
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.2s;
-  }
-  .speed-btn.selected {
-    border-color: var(--navy);
-    background: var(--navy);
-    color: #fff;
-  }
-  .speed-btn .speed-label {
-    display: block;
-    font-size: 10px;
-    font-weight: 400;
-    margin-top: 1px;
-    opacity: 0.7;
-  }
-
-  /* ── Player Controls ── */
-  .player-controls {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--cream);
     border-radius: 10px;
     padding: 12px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
   }
+  .track-item.selected { border-color: var(--gold); background: #fff; }
+  .track-row { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .track-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--navy);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    flex-shrink: 0; min-width: 50px; text-align: center;
+  }
+  .track-item.selected .track-num {
+    background: var(--navy); color: var(--gold-light); border-color: var(--navy);
+  }
+  .track-label {
+    flex: 1; font-size: 13px; font-weight: 500; color: var(--text);
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .track-plays { font-size: 10px; color: var(--text-muted); flex-shrink: 0; }
+  .track-plays svg { width: 10px; height: 10px; fill: var(--gold); vertical-align: -1px; margin-right: 2px; }
+
+  .player-controls {
+    display: none;
+    align-items: center; gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+  }
+  .track-item.selected .player-controls { display: flex; }
+
   .play-btn {
     width: 44px; height: 44px;
     border-radius: 50%;
     background: var(--navy);
-    border: none;
-    cursor: pointer;
+    border: none; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    transition: background 0.2s;
+    flex-shrink: 0; transition: background 0.2s;
   }
   .play-btn:active { background: var(--gold); }
   .play-btn svg { fill: #fff; width: 18px; height: 18px; }
@@ -232,10 +181,8 @@
   .progress-bar {
     width: 100%; height: 6px;
     background: var(--border);
-    border-radius: 3px;
-    overflow: hidden;
-    cursor: pointer;
-    position: relative;
+    border-radius: 3px; overflow: hidden;
+    cursor: pointer; position: relative;
   }
   .progress-fill {
     height: 100%;
@@ -245,32 +192,14 @@
     transition: width 0.1s linear;
   }
   .time-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 4px;
-    font-variant-numeric: tabular-nums;
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--text-muted);
+    margin-top: 4px; font-variant-numeric: tabular-nums;
   }
 
-  /* ── Play Count Badge ── */
-  .play-count {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 10px;
-  }
-  .play-count svg { width: 12px; height: 12px; fill: var(--gold); }
-
-  /* ── Footer ── */
   .footer {
-    text-align: center;
-    padding: 20px;
-    font-size: 11px;
-    color: var(--text-muted);
-    letter-spacing: 1px;
+    text-align: center; padding: 20px;
+    font-size: 11px; color: var(--text-muted); letter-spacing: 1px;
   }
 </style>
 </head>
@@ -302,69 +231,98 @@
 <div class="footer">PINNACLE LISTING SYSTEM</div>
 
 <script>
-const PHASES = [
+// ── 7 Groups of tracks ──
+const GROUPS = [
   {
-    num: 1, title: 'Walk-Through',
-    files: [
-      { speed: '1.00×', label: 'Slow', file: '1.Walk-Through-EN-1.00.mp3' },
-      { speed: '1.15×', label: 'Normal', file: '1.Walk-Through-EN-1.15.mp3' },
-      { speed: '1.25×', label: 'Medium', file: '1.Walk-Through-EN-1.25.mp3' },
-      { speed: '1.37×', label: 'Quick', file: '1.Walk-Through-EN-1.37.mp3' },
-      { speed: '1.49×', label: 'Fast', file: '1.Walk-Through-EN-1.49.mp3' },
+    gid: 1, num: '1.0', title: 'Walk-Through',
+    tracks: [
+      { tid: '1.0',   label: 'Walk-Through-EN',          file: '1.0-Walk-Through-EN.mp3' },
+      { tid: '1.1',   label: 'Arrival',                  file: '1.1- Arrival.mp3' },
+      { tid: '1.2',   label: 'Walkthrough',              file: '1.2- Walkthrough.mp3' },
+      { tid: '1.3',   label: 'Prep Plan',                file: '1.3- Prep Paln.mp3' },
+      { tid: '1.4',   label: 'Wrap-up',                  file: '1.4-Wrap-up.mp3' },
     ]
   },
   {
-    num: 2, title: 'Discovery',
-    files: [
-      { speed: '1.00×', label: 'Slow', file: '2.Discovery-L-EN1.00.mp3' },
-      { speed: '1.15×', label: 'Normal', file: '2.Discovery-L-EN1.15.mp3' },
-      { speed: '1.25×', label: 'Medium', file: '2.Discovery-L-EN1.25.mp3' },
-      { speed: '1.37×', label: 'Quick', file: '2.Discovery-L-EN1.37.mp3' },
-      { speed: '1.46×', label: 'Fast', file: '2.Discovery-L-EN1.46.mp3' },
+    gid: 2, num: '1.9', title: 'Presentation Path',
+    tracks: [
+      { tid: '1.9.0', label: 'Presentation Path',        file: '1.9.0- Presentation Path.mp3' },
+      { tid: '1.9.1', label: 'Score & Path-A',           file: '1.9.1-Score & Path-A.mp3' },
+      { tid: '1.9.2', label: 'Path-B & C',               file: '1.9.2-Path-B & C.mp3' },
+      { tid: '1.9.3', label: 'Path-E',                   file: '1.9.3-Path-E.mp3' },
+      { tid: '1.9.4', label: 'Spousal Split',            file: '1.9.4-Spousal Split.mp3' },
+      { tid: '1.9.5', label: 'Blocker Split',            file: '1.9.5-Blocker Split.mp3' },
     ]
   },
   {
-    num: 3, title: 'Plan of Action',
-    files: [
-      { speed: '1.00×', label: 'Slow', file: '3.POA-L-EN1.00.mp3' },
-      { speed: '1.15×', label: 'Normal', file: '3.POA-L-EN1.15.mp3' },
-      { speed: '1.25×', label: 'Medium', file: '3.POA-L-EN1.25.mp3' },
-      { speed: '1.37×', label: 'Quick', file: '3.POA-L-EN1.37.mp3' },
-      { speed: '1.50×', label: 'Fast', file: '3.POA-L-EN1.50.mp3' },
+    gid: 3, num: '2.0', title: 'Discovery',
+    tracks: [
+      { tid: '2.0', label: 'Discovery-EN',               file: '2.0-Discovery-EN.mp3' },
+      { tid: '2.1', label: 'Agenda',                     file: '2.1- Agenda.mp3' },
+      { tid: '2.2', label: 'Discovery-1',                file: '2.2-Discovery-1.mp3' },
+      { tid: '2.3', label: 'Discovery-2',                file: '2.3-Discovery-2.mp3' },
+      { tid: '2.4', label: 'Discovery-3 Recap',          file: '2.4-Discovery-3 Recap.mp3' },
     ]
   },
   {
-    num: 4, title: 'Price Presentation',
-    files: [
-      { speed: '1.00×', label: 'Slow', file: '4.Price-presentation-EN1.00.mp3' },
-      { speed: '1.15×', label: 'Normal', file: '4.Price-presentation-EN1.15.mp3' },
-      { speed: '1.25×', label: 'Medium', file: '4.Price-presentation-EN1.25.mp3' },
-      { speed: '1.37×', label: 'Quick', file: '4.Price-presentation-EN1.37.mp3' },
-      { speed: '1.50×', label: 'Fast', file: '4.Price-presentation-EN1.50.mp3' },
+    gid: 4, num: '3.0', title: 'Plan of Action',
+    tracks: [
+      { tid: '3.0', label: 'Plan of Action-EN',          file: '3.0-Plan of Action-EN.mp3' },
+      { tid: '3.1', label: 'Transition',                 file: '3.1-Transition.mp3' },
+      { tid: '3.2', label: 'Pillar-1',                   file: '3.2-Pillar-1.mp3' },
+      { tid: '3.3', label: 'Pillar-2',                   file: '3.3-Pillar-2.mp3' },
+      { tid: '3.4', label: 'Pillar-3',                   file: '3.4- Pillar-3.mp3' },
+      { tid: '3.5', label: 'Closing',                    file: '3.5- Closing.mp3' },
     ]
   },
   {
-    num: 5, title: 'Full',
-    files: [
-      { speed: '1.00×', label: 'Slow', file: 'Full1.00.mp3' },
-      { speed: '1.15×', label: 'Normal', file: 'Full1.15.mp3' },
-      { speed: '1.25×', label: 'Medium', file: 'Full1.25.mp3' },
-      { speed: '1.37×', label: 'Quick', file: 'Full1.37.mp3' },
-      { speed: '1.50×', label: 'Fast', file: 'Full1.50.mp3' },
+    gid: 5, num: '4.0', title: 'Price Presentation',
+    tracks: [
+      { tid: '4.0', label: 'Price-presentation-EN',      file: '4.0-Price-presentation-EN.mp3' },
+      { tid: '4.1', label: 'Opening & Market',           file: '4.1-Opening & market.mp3' },
+      { tid: '4.2', label: 'Solds & Actives',            file: '4.2-Solds & Actives.mp3' },
+      { tid: '4.3', label: 'Buyer Behavior & Strategies',file: '4.3-Buyer Behavior & strategies.mp3' },
+      { tid: '4.4', label: 'Recommendation & Closing',   file: '4.4- Recommendation & Closing.mp3' },
     ]
-  }
+  },
+  {
+    gid: 6, num: '5.0', title: 'Closing',
+    tracks: [
+      { tid: '5.0', label: 'Closing',                    file: '5.0-closing.mp3' },
+      { tid: '5.1', label: 'Choosing',                   file: '5.1- Choosing.mp3' },
+      { tid: '5.2', label: 'Assumptive Close',           file: '5.2- Assumptive Close.mp3' },
+      { tid: '5.3', label: 'Direct-Ask Close',           file: '5.3- Direct-Ask Close.mp3' },
+      { tid: '5.4', label: 'Schedule Follow-up Close',   file: '5.4- Schedule Follow-up Close.mp3' },
+      { tid: '5.5', label: 'Paperwork Walk-through',     file: '5.5- Paperwork Walk-through.mp3' },
+      { tid: '5.6', label: 'Launch Prep Transit',        file: '5.6- Launch Prep Transit.mp3' },
+    ]
+  },
+  {
+    gid: 7, num: '6.0', title: 'Objection Bank',
+    tracks: [
+      { tid: '6.0', label: 'Objection Bank',             file: '6.0-Objection Bank.mp3' },
+      { tid: '6.1', label: 'Principles & Commission',    file: '6.1- Principles & Commission.mp3' },
+      { tid: '6.2', label: 'Worth More',                 file: '6.2- Worth More.mp3' },
+      { tid: '6.3', label: 'Another Agent More',         file: '6.3- Another agent more.mp3' },
+      { tid: '6.4', label: 'Think Over & Try Higher 1st',file: '6.4- Think over & try higher 1st.mp3' },
+      { tid: '6.5', label: 'Higher 1st',                 file: '6.5- Higher 1st.mp3' },
+      { tid: '6.6', label: 'Why Full Commission',        file: '6.6- why full commission.mp3' },
+      { tid: '6.7', label: 'Appendix-Index',             file: '6.7- Appendix-index.mp3' },
+    ]
+  },
 ];
 
 const BASE_URL = 'https://peterluo.homes/mp3/';
-const STORAGE_KEY = 'lpen_stats_v1';
-const RESUME_KEY = 'lpen_resume_v1';
+const STORAGE_KEY = 'flp_mp3_stats_v1';
+const RESUME_KEY  = 'flp_mp3_resume_v1';
 
 // ── State ──
 let stats = loadStats();
 let currentAudio = null;
-let currentPhase = null;
-let selectedSpeed = {}; // phaseNum -> index
-let openPhase = null;
+let currentGid = null;
+let currentTid = null;
+let selectedTrack = {};
+let openGroup = null;
 let rafId = null;
 
 function loadStats() {
@@ -414,10 +372,9 @@ function getStreak() {
     const curr = new Date(days[i]);
     const diff = Math.round((prev - curr) / 86400000);
     if (diff === 1) streak++;
-    else if (diff === 0) continue; // duplicate day entry
+    else if (diff === 0) continue;
     else break;
   }
-  // Check if streak includes today or yesterday
   const today = new Date().toISOString().slice(0,10);
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
   if (days[0] !== today && days[0] !== yesterday) return 0;
@@ -430,7 +387,6 @@ function fmtTime(s) {
   const sec = Math.floor(s % 60);
   return m + ':' + String(sec).padStart(2, '0');
 }
-
 function fmtTotalTime(s) {
   if (s >= 3600) {
     const h = Math.floor(s / 3600);
@@ -439,71 +395,79 @@ function fmtTotalTime(s) {
   }
   return Math.floor(s / 60) + 'm';
 }
+function getTotalPlays() { return Object.values(stats.plays).reduce((a, b) => a + b, 0); }
+function getFilePlays(file) { return stats.plays[file] || 0; }
 
-function getTotalPlays() {
-  return Object.values(stats.plays).reduce((a, b) => a + b, 0);
-}
-
-function getFilePlays(file) {
-  return stats.plays[file] || 0;
+function tidKey(gid, tid) { return gid + '_' + tid.replace(/\./g, '-'); }
+function findGroup(gid) { return GROUPS.find(g => g.gid === gid); }
+function findTrack(gid, tid) {
+  const g = findGroup(gid);
+  return g ? g.tracks.find(t => t.tid === tid) : null;
 }
 
 // ── Render ──
 function render() {
   const app = document.getElementById('app');
-  app.innerHTML = PHASES.map(p => {
-    const isOpen = openPhase === p.num;
-    const isActive = currentPhase === p.num;
-    const si = selectedSpeed[p.num] || 0;
-    const f = p.files[si];
-    const plays = getFilePlays(f.file);
+  app.innerHTML = GROUPS.map(g => {
+    const isOpen = openGroup === g.gid;
+    const isActive = currentGid === g.gid;
+    const selTid = selectedTrack[g.gid] || g.tracks[0].tid;
+
+    const tracksHtml = g.tracks.map(t => {
+      const isSel = t.tid === selTid;
+      const isPlayingThis = isActive && currentTid === t.tid && currentAudio && !currentAudio.paused;
+      const plays = getFilePlays(t.file);
+      const key = tidKey(g.gid, t.tid);
+      return `
+        <div class="track-item ${isSel ? 'selected' : ''}">
+          <div class="track-row" onclick="selectTrack(${g.gid}, '${t.tid}')">
+            <div class="track-num">${t.tid}</div>
+            <div class="track-label">${t.label}</div>
+            ${plays > 0 ? `<div class="track-plays"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>${plays}</div>` : ''}
+          </div>
+          <div class="player-controls">
+            <button class="play-btn ${isPlayingThis ? 'playing' : ''}" onclick="togglePlay(${g.gid}, '${t.tid}')">
+              ${isPlayingThis
+                ? '<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>'
+                : '<svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>'}
+            </button>
+            <div class="progress-area">
+              <div class="progress-bar" onclick="seek(event, ${g.gid}, '${t.tid}')" id="pbar-${key}">
+                <div class="progress-fill" id="pfill-${key}"></div>
+              </div>
+              <div class="time-row">
+                <span id="tcur-${key}">0:00</span>
+                <span id="tdur-${key}">0:00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
     return `
-      <div class="phase-card ${isOpen ? 'open' : ''} ${isActive ? 'active' : ''}" data-phase="${p.num}">
-        <div class="phase-header" onclick="togglePhase(${p.num})">
-          <div class="phase-num">${p.num}</div>
+      <div class="phase-card ${isOpen ? 'open' : ''} ${isActive ? 'active' : ''}" data-gid="${g.gid}">
+        <div class="phase-header" onclick="toggleGroup(${g.gid})">
+          <div class="phase-num">${g.gid}</div>
           <div class="phase-info">
-            <div class="phase-title">${p.title}</div>
-            <div class="phase-meta">Phase ${p.num} · ${p.files.length} speeds</div>
+            <div class="phase-title">${g.num}-${g.title}</div>
+            <div class="phase-meta">${g.tracks.length} tracks</div>
           </div>
           <div class="phase-toggle">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
         </div>
-        <div class="phase-body" id="body-${p.num}">
+        <div class="phase-body" id="body-${g.gid}">
           <div class="phase-body-inner">
-            <div class="speed-row">
-              ${p.files.map((f, i) => `
-                <button class="speed-btn ${i === si ? 'selected' : ''}" onclick="selectSpeed(${p.num}, ${i})">
-                  ${f.speed}<span class="speed-label">${f.label}</span>
-                </button>
-              `).join('')}
-            </div>
-            <div class="player-controls">
-              <button class="play-btn ${isActive && currentAudio && !currentAudio.paused ? 'playing' : ''}" onclick="togglePlay(${p.num})">
-                ${isActive && currentAudio && !currentAudio.paused
-                  ? '<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>'
-                  : '<svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>'}
-              </button>
-              <div class="progress-area">
-                <div class="progress-bar" onclick="seek(event, ${p.num})" id="pbar-${p.num}">
-                  <div class="progress-fill" id="pfill-${p.num}"></div>
-                </div>
-                <div class="time-row">
-                  <span id="tcur-${p.num}">0:00</span>
-                  <span id="tdur-${p.num}">0:00</span>
-                </div>
-              </div>
-            </div>
-            ${plays > 0 ? `<div class="play-count"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg> Played ${plays} time${plays > 1 ? 's' : ''}</div>` : ''}
+            ${tracksHtml}
           </div>
         </div>
       </div>
     `;
   }).join('');
 
-  // Expand open phase
-  if (openPhase) {
-    const body = document.getElementById('body-' + openPhase);
+  if (openGroup) {
+    const body = document.getElementById('body-' + openGroup);
     if (body) body.style.maxHeight = body.scrollHeight + 'px';
   }
 }
@@ -514,55 +478,51 @@ function updateStatsUI() {
   document.getElementById('streak').textContent = getStreak();
 }
 
-function togglePhase(num) {
-  openPhase = openPhase === num ? null : num;
+function toggleGroup(gid) {
+  openGroup = openGroup === gid ? null : gid;
   render();
 }
 
-function selectSpeed(phaseNum, speedIdx) {
-  const wasPlaying = currentPhase === phaseNum && currentAudio && !currentAudio.paused;
-  if (currentPhase === phaseNum && currentAudio) {
+function selectTrack(gid, tid) {
+  if (currentAudio && (currentGid !== gid || currentTid !== tid)) {
     userInitiatedPause = true;
-    currentAudio.pause();
+    try { currentAudio.pause(); } catch(e) {}
     flushAll();
     currentAudio = null;
-    currentPhase = null;
+    currentGid = null;
+    currentTid = null;
   }
-  selectedSpeed[phaseNum] = speedIdx;
+  selectedTrack[gid] = tid;
   render();
-  if (wasPlaying) togglePlay(phaseNum);
 }
 
-// ── Time tracking (hybrid currentTime-delta + wall-clock gap recovery) ──
+// ── Time tracking ──
 let prevAudioTime = null;
 let prevWallTime  = null;
 let unsavedSec    = 0;
 let userInitiatedPause = false;
-
-// Saved when going hidden so we can recover the gap on return
-let hiddenAtWall  = null;  // wall-clock timestamp when screen turned off
+let hiddenAtWall  = null;
 let wasPlayingWhenHidden = false;
 
-const MAX_CT_DELTA = 1.5;   // currentTime jump larger than this = seek/loop
-const MAX_GAP_SEC  = 7200;  // never credit more than 2h in one gap
-const SAVE_EVERY   = 5;     // flush localStorage every N accumulated seconds
+const MAX_CT_DELTA = 1.5;
+const MAX_GAP_SEC  = 7200;
+const SAVE_EVERY   = 5;
 
-function togglePlay(phaseNum) {
-  const si = selectedSpeed[phaseNum] || 0;
-  const file = PHASES[phaseNum - 1].files[si].file;
-  const url = BASE_URL + encodeURIComponent(file);
+function togglePlay(gid, tid) {
+  const track = findTrack(gid, tid);
+  if (!track) return;
+  const url = BASE_URL + encodeURIComponent(track.file);
 
-  // If clicking a different phase, stop current
-  if (currentPhase && currentPhase !== phaseNum && currentAudio) {
+  if (currentAudio && (currentGid !== gid || currentTid !== tid)) {
     userInitiatedPause = true;
     currentAudio.pause();
     flushAll();
     currentAudio = null;
-    currentPhase = null;
+    currentGid = null;
+    currentTid = null;
   }
 
-  // If same phase, toggle
-  if (currentPhase === phaseNum && currentAudio) {
+  if (currentAudio && currentGid === gid && currentTid === tid) {
     if (currentAudio.paused) {
       userInitiatedPause = false;
       hiddenAtWall = null;
@@ -577,65 +537,64 @@ function togglePlay(phaseNum) {
     return;
   }
 
-  // New playback
+  selectedTrack[gid] = tid;
   userInitiatedPause = false;
   clearResumeState();
   currentAudio = new Audio(url);
-  currentPhase = phaseNum;
+  currentGid = gid;
+  currentTid = tid;
 
+  const key = tidKey(gid, tid);
   currentAudio.addEventListener('loadedmetadata', () => {
-    const durEl = document.getElementById('tdur-' + phaseNum);
+    const durEl = document.getElementById('tdur-' + key);
     if (durEl) durEl.textContent = fmtTime(currentAudio.duration);
   });
 
-  attachAudioHandlers(currentAudio, file);
+  attachAudioHandlers(currentAudio, track.file);
 
   currentAudio.play().then(() => {
+    render();
     saveResumeState();
   }).catch(e => {
     console.error('Playback failed:', e);
     currentAudio = null;
-    currentPhase = null;
+    currentGid = null;
+    currentTid = null;
     render();
   });
 }
 
-// ── Audio event handlers (lpen-style hybrid timeupdate tracking) ──
 function attachAudioHandlers(audio, file) {
   let lastPosSave = 0;
 
-  // Core: timeupdate fires ~4x/sec — diff currentTime tick-to-tick
   audio.addEventListener('timeupdate', () => {
     const wallNow = Date.now();
 
-    // Save resume position every 3s
     if (wallNow - lastPosSave >= 3000) {
       saveResumeState();
       lastPosSave = wallNow;
     }
 
-    // Update progress UI
-    const fill = document.getElementById('pfill-' + currentPhase);
-    const tcur = document.getElementById('tcur-' + currentPhase);
-    if (fill && audio.duration) {
-      fill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+    if (currentGid !== null && currentTid !== null) {
+      const key = tidKey(currentGid, currentTid);
+      const fill = document.getElementById('pfill-' + key);
+      const tcur = document.getElementById('tcur-' + key);
+      if (fill && audio.duration) {
+        fill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+      }
+      if (tcur) tcur.textContent = fmtTime(audio.currentTime);
     }
-    if (tcur) tcur.textContent = fmtTime(audio.currentTime);
 
     if (audio.paused) return;
 
     const ctNow = audio.currentTime;
-
     if (prevAudioTime !== null && prevWallTime !== null) {
       const ctDelta   = ctNow - prevAudioTime;
       const wallDelta = (wallNow - prevWallTime) / 1000;
 
       if (ctDelta > 0 && ctDelta <= MAX_CT_DELTA) {
-        // Normal tick — screen on, timeupdate firing regularly
         addListenTime(ctDelta);
       } else if (wallDelta > MAX_CT_DELTA && wallDelta <= MAX_GAP_SEC) {
-        // Gap detected (screen-off / throttled)
-        // Take min(wallDelta, ctGap) to avoid over-counting seeks
         const ctGap = Math.abs(ctDelta);
         addListenTime(Math.min(wallDelta, ctGap > 0 ? ctGap : wallDelta));
       }
@@ -645,13 +604,11 @@ function attachAudioHandlers(audio, file) {
     prevWallTime  = wallNow;
   });
 
-  // Seeking resets anchors so position jumps aren't counted as listen time
   audio.addEventListener('seeked', () => {
     prevAudioTime = audio.currentTime;
     prevWallTime  = Date.now();
   });
 
-  // Play event — reset anchors, update UI
   audio.addEventListener('play', () => {
     prevAudioTime = audio.currentTime;
     prevWallTime  = Date.now();
@@ -659,10 +616,7 @@ function attachAudioHandlers(audio, file) {
     render();
   });
 
-  // Pause event — save gap info for screen-off recovery, then flush
   audio.addEventListener('pause', () => {
-    // iOS fires pause BEFORE visibilitychange on screen-off
-    // Save wall-clock so we can recover the gap when screen turns back on
     if (!userInitiatedPause && prevWallTime !== null) {
       hiddenAtWall = Date.now();
       wasPlayingWhenHidden = true;
@@ -674,7 +628,6 @@ function attachAudioHandlers(audio, file) {
     }
   });
 
-  // Ended event — record play, loop
   audio.addEventListener('ended', () => {
     flushAll();
     recordPlay(file);
@@ -684,7 +637,6 @@ function attachAudioHandlers(audio, file) {
   });
 }
 
-// Flush all tracking state and save to localStorage
 function flushAll() {
   prevAudioTime = null;
   prevWallTime  = null;
@@ -698,33 +650,36 @@ function flushAll() {
 function startProgressLoop() {
   function tick() {
     if (!currentAudio || currentAudio.paused) return;
-    const fill = document.getElementById('pfill-' + currentPhase);
-    const tcur = document.getElementById('tcur-' + currentPhase);
-    if (fill && currentAudio.duration) {
-      fill.style.width = (currentAudio.currentTime / currentAudio.duration * 100) + '%';
+    if (currentGid !== null && currentTid !== null) {
+      const key = tidKey(currentGid, currentTid);
+      const fill = document.getElementById('pfill-' + key);
+      const tcur = document.getElementById('tcur-' + key);
+      if (fill && currentAudio.duration) {
+        fill.style.width = (currentAudio.currentTime / currentAudio.duration * 100) + '%';
+      }
+      if (tcur) tcur.textContent = fmtTime(currentAudio.currentTime);
     }
-    if (tcur) tcur.textContent = fmtTime(currentAudio.currentTime);
     rafId = requestAnimationFrame(tick);
   }
   cancelAnimationFrame(rafId);
   tick();
 }
 
-function seek(e, phaseNum) {
-  if (currentPhase !== phaseNum || !currentAudio || !currentAudio.duration) return;
-  const bar = document.getElementById('pbar-' + phaseNum);
+function seek(e, gid, tid) {
+  if (currentGid !== gid || currentTid !== tid || !currentAudio || !currentAudio.duration) return;
+  const key = tidKey(gid, tid);
+  const bar = document.getElementById('pbar-' + key);
   const rect = bar.getBoundingClientRect();
   const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
   currentAudio.currentTime = pct * currentAudio.duration;
 }
 
-// ── Resume: save/restore playback state ──
+// ── Resume ──
 function saveResumeState() {
-  if (currentPhase && currentAudio) {
-    const si = selectedSpeed[currentPhase] || 0;
+  if (currentGid !== null && currentTid !== null && currentAudio) {
     const state = {
-      phase: currentPhase,
-      speed: si,
+      gid: currentGid,
+      tid: currentTid,
       position: currentAudio.currentTime || 0,
       wasPlaying: !currentAudio.paused,
       savedAt: Date.now()
@@ -732,16 +687,11 @@ function saveResumeState() {
     localStorage.setItem(RESUME_KEY, JSON.stringify(state));
   }
 }
-
-function clearResumeState() {
-  localStorage.removeItem(RESUME_KEY);
-}
-
+function clearResumeState() { localStorage.removeItem(RESUME_KEY); }
 function loadResumeState() {
   try {
     const d = JSON.parse(localStorage.getItem(RESUME_KEY));
-    if (!d || !d.phase) return null;
-    // Only resume if saved within last 2 hours
+    if (!d || d.gid == null || !d.tid) return null;
     if (Date.now() - d.savedAt > 2 * 60 * 60 * 1000) {
       clearResumeState();
       return null;
@@ -750,11 +700,11 @@ function loadResumeState() {
   } catch(e) { return null; }
 }
 
-function createAudioWithResume(phaseNum, speedIdx, position, autoPlay) {
-  const file = PHASES[phaseNum - 1].files[speedIdx].file;
-  const url = BASE_URL + encodeURIComponent(file);
+function createAudioWithResume(gid, tid, position, autoPlay) {
+  const track = findTrack(gid, tid);
+  if (!track) return;
+  const url = BASE_URL + encodeURIComponent(track.file);
 
-  // Kill any existing audio cleanly
   if (currentAudio) {
     userInitiatedPause = true;
     try { currentAudio.pause(); } catch(e) {}
@@ -764,9 +714,11 @@ function createAudioWithResume(phaseNum, speedIdx, position, autoPlay) {
   userInitiatedPause = false;
   currentAudio = new Audio(url);
   currentAudio.preload = 'auto';
-  currentPhase = phaseNum;
+  currentGid = gid;
+  currentTid = tid;
 
-  // Use a one-time listener to seek AFTER audio is ready
+  const key = tidKey(gid, tid);
+
   let seeked = false;
   function doSeek() {
     if (seeked) return;
@@ -774,51 +726,42 @@ function createAudioWithResume(phaseNum, speedIdx, position, autoPlay) {
     if (position > 0 && currentAudio.duration && position < currentAudio.duration) {
       currentAudio.currentTime = position;
     }
-    const durEl = document.getElementById('tdur-' + phaseNum);
+    const durEl = document.getElementById('tdur-' + key);
     if (durEl && currentAudio.duration) durEl.textContent = fmtTime(currentAudio.duration);
-    const fill = document.getElementById('pfill-' + phaseNum);
+    const fill = document.getElementById('pfill-' + key);
     if (fill && currentAudio.duration) {
       fill.style.width = (position / currentAudio.duration * 100) + '%';
     }
-    const tcur = document.getElementById('tcur-' + phaseNum);
+    const tcur = document.getElementById('tcur-' + key);
     if (tcur) tcur.textContent = fmtTime(position);
 
     if (autoPlay) {
-      currentAudio.play().then(() => {
-        render();
-      }).catch(() => {
-        render();
-      });
+      currentAudio.play().then(() => render()).catch(() => render());
     } else {
       render();
     }
   }
 
-  // Try multiple events — iOS is inconsistent about which fires
   currentAudio.addEventListener('loadedmetadata', doSeek, { once: true });
   currentAudio.addEventListener('canplay', doSeek, { once: true });
   setTimeout(doSeek, 2000);
 
-  attachAudioHandlers(currentAudio, file);
-
+  attachAudioHandlers(currentAudio, track.file);
   currentAudio.load();
 }
 
 function tryResume() {
   const state = loadResumeState();
   if (!state) return;
-
-  selectedSpeed[state.phase] = state.speed;
-  openPhase = state.phase;
+  selectedTrack[state.gid] = state.tid;
+  openGroup = state.gid;
   render();
-
-  createAudioWithResume(state.phase, state.speed, state.position, state.wasPlaying);
+  createAudioWithResume(state.gid, state.tid, state.position, state.wasPlaying);
 }
 
-// ── Visibility / lifecycle: save gap info on hide, recover on return ──
+// ── Visibility / lifecycle ──
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
-    // BEFORE flushing, remember wall-clock and playing state for gap recovery
     if (currentAudio && !currentAudio.paused && prevWallTime !== null) {
       hiddenAtWall = Date.now();
       wasPlayingWhenHidden = true;
@@ -828,7 +771,6 @@ document.addEventListener('visibilitychange', () => {
     }
     flushAll();
   } else {
-    // Screen back on — recover the gap
     if (wasPlayingWhenHidden && hiddenAtWall) {
       const gapSec = (Date.now() - hiddenAtWall) / 1000;
       if (gapSec > 0.5 && gapSec <= MAX_GAP_SEC) {
@@ -839,16 +781,14 @@ document.addEventListener('visibilitychange', () => {
       wasPlayingWhenHidden = false;
     }
 
-    if (currentPhase && currentAudio) {
+    if (currentGid !== null && currentTid !== null && currentAudio) {
       const isAlive = !currentAudio.paused || currentAudio.readyState > 0;
       if (!isAlive) {
-        // Audio was killed by iOS — recreate at saved position
         const state = loadResumeState();
         if (state) {
-          createAudioWithResume(state.phase, state.speed, state.position, !userInitiatedPause);
+          createAudioWithResume(state.gid, state.tid, state.position, !userInitiatedPause);
         }
       } else if (currentAudio.paused && !userInitiatedPause) {
-        // Interrupted by phone call/alarm — try to resume
         currentAudio.play().catch(() => { render(); });
       }
       render();
@@ -857,7 +797,6 @@ document.addEventListener('visibilitychange', () => {
 });
 
 window.addEventListener('focus', () => {
-  // Also try gap recovery on focus (some iOS versions fire focus without visibilitychange)
   if (wasPlayingWhenHidden && hiddenAtWall) {
     const gapSec = (Date.now() - hiddenAtWall) / 1000;
     if (gapSec > 0.5 && gapSec <= MAX_GAP_SEC) {
@@ -871,7 +810,6 @@ window.addEventListener('focus', () => {
 
 window.addEventListener('pagehide', flushAll);
 window.addEventListener('blur', () => {
-  // Save gap info before flushing
   if (currentAudio && !currentAudio.paused && prevWallTime !== null) {
     hiddenAtWall = Date.now();
     wasPlayingWhenHidden = true;
