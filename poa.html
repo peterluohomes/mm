@@ -432,81 +432,6 @@ body {
 .fill-ctrl-btn:hover { border-color: var(--blue); background: var(--lighter); }
 .fill-ctrl-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue); }
 
-/* === MODE 4: TELEPROMPTER === */
-.teleprompter-container {
-  background: #0A0A14;
-  border-radius: var(--radius);
-  padding: 40px 32px;
-  min-height: 500px;
-  position: relative;
-  overflow: hidden;
-}
-.teleprompter-text {
-  color: rgba(255,255,255,0.35);
-  font-size: 22px;
-  line-height: 2;
-  transition: all 0.3s;
-}
-.teleprompter-text .tp-line {
-  display: block;
-  padding: 8px 0;
-  transition: all 0.4s;
-  cursor: pointer;
-}
-.teleprompter-text .tp-line.active {
-  color: rgba(255,255,255,0.95);
-  font-size: 24px;
-  transform: scale(1.01);
-}
-.teleprompter-text .tp-line.near {
-  color: rgba(255,255,255,0.55);
-}
-.teleprompter-text .tp-line .tp-anchor {
-  color: var(--orange);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  font-weight: 600;
-  background: rgba(212,118,10,0.2);
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-right: 6px;
-}
-.teleprompter-text .tp-line .tp-section-break {
-  display: block;
-  color: var(--blue-light);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  margin-top: 20px;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-}
-.tp-controls {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 24px;
-}
-.tp-btn {
-  background: rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.8);
-  border: 1px solid rgba(255,255,255,0.15);
-  padding: 10px 24px;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.tp-btn:hover { background: rgba(255,255,255,0.15); color: white; }
-.tp-speed {
-  color: rgba(255,255,255,0.5);
-  font-size: 13px;
-  text-align: center;
-  margin-top: 12px;
-}
-
 /* === SCORE === */
 .score-bar {
   background: var(--white);
@@ -530,8 +455,6 @@ body {
   .nav-btn { white-space: nowrap; font-size: 12px; padding: 6px 12px; }
   .quiz-options { grid-template-columns: 1fr; }
   .quiz-prompt { font-size: 22px; }
-  .teleprompter-text { font-size: 18px; }
-  .teleprompter-text .tp-line.active { font-size: 20px; }
 }
 
 .fl-word{cursor:pointer;transition:all 0.2s;border-bottom:1px dotted var(--orange);padding:0 1px}
@@ -552,7 +475,6 @@ body {
     <button class="nav-btn" onclick="setMode('quiz')">🧠 Quiz</button>
     <button class="nav-btn" onclick="setMode('fill')">✏️ Fill Blanks</button>
     <button class="nav-btn" onclick="setMode('firstletter')">🔤 First Letter</button>
-    <button class="nav-btn" onclick="setMode('teleprompter')">📺 Teleprompter</button>
   </div>
 </nav>
 
@@ -709,14 +631,12 @@ EXPANDED_DATA.forEach(section => {
 
 let currentMode = 'read';
 let quizState = { index: 0, score: 0, answered: [], showingReveal: false };
-let tpState = { currentLine: 0, playing: false, interval: null, speed: 3000 };
 
 function setMode(mode) {
   currentMode = mode;
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.nav-btn[onclick="setMode('${mode}')"]`).classList.add('active');
   if (mode === 'quiz') { quizState = { index: 0, score: 0, answered: new Array(ALL_ANCHORS.length).fill(null), showingReveal: false }; }
-  if (mode === 'teleprompter') { tpState.currentLine = 0; tpState.playing = false; clearInterval(tpState.interval); }
   render();
 }
 
@@ -727,7 +647,6 @@ function render() {
     case 'quiz': app.innerHTML = renderQuiz(); break;
     case 'fill': app.innerHTML = renderFill(); break;
     case 'firstletter': app.innerHTML = renderFirstLetter(); break;
-    case 'teleprompter': app.innerHTML = renderTeleprompter(); break;
   }
 }
 
@@ -931,96 +850,6 @@ function renderFirstLetter(){
   }).join('')+'</div>';
 }
 
-function renderTeleprompter() {
-  const allLines = [];
-  DATA.forEach(section => {
-    allLines.push({ type: 'section', text: `${section.emoji} ${section.title}` });
-    if (section.subtitle) allLines.push({ type: 'subtitle', text: section.subtitle });
-    section.lines.forEach(line => {
-      if (line.type === 'stage') {
-        allLines.push({ type: 'stage', text: `(${line.text})` });
-      } else {
-        allLines.push({ type: 'line', anchor: line.anchor, text: line.script, cue: line.cue });
-      }
-    });
-    if (section.checkin) {
-      allLines.push({ type: 'checkin', text: section.checkin });
-    }
-  });
-
-  return `
-    <div class="teleprompter-container" id="tp-box">
-      <div class="teleprompter-text" id="tp-text">
-        ${allLines.map((l, i) => {
-          const cls = i === tpState.currentLine ? 'active' : Math.abs(i - tpState.currentLine) <= 2 ? 'near' : '';
-          if (l.type === 'section') return `<span class="tp-line ${cls}" data-idx="${i}" onclick="tpGoTo(${i})"><span class="tp-section-break">${l.text}</span></span>`;
-          if (l.type === 'stage') return `<span class="tp-line ${cls}" data-idx="${i}" onclick="tpGoTo(${i})" style="font-style:italic;font-size:16px;">${l.text}</span>`;
-          if (l.type === 'checkin') return `<span class="tp-line ${cls}" data-idx="${i}" onclick="tpGoTo(${i})" style="color:rgba(212,118,10,0.7);">✅ ${l.text}</span>`;
-          return `<span class="tp-line ${cls}" data-idx="${i}" onclick="tpGoTo(${i})"><span class="tp-anchor">${l.anchor}</span>${l.text}</span>`;
-        }).join('')}
-      </div>
-    </div>
-    <div class="tp-controls">
-      <button class="tp-btn" onclick="tpPrev()">← Prev</button>
-      <button class="tp-btn" onclick="tpTogglePlay()" id="tp-play-btn">${tpState.playing ? '⏸ Pause' : '▶ Play'}</button>
-      <button class="tp-btn" onclick="tpNext()">Next →</button>
-    </div>
-    <div class="tp-speed">Speed: <button class="tp-btn" style="padding:4px 12px;font-size:12px;" onclick="tpChangeSpeed(-500)">−</button> ${(tpState.speed/1000).toFixed(1)}s <button class="tp-btn" style="padding:4px 12px;font-size:12px;" onclick="tpChangeSpeed(500)">+</button> &nbsp;|&nbsp; Use ← → arrow keys to navigate</div>
-  `;
-}
-
-function tpGoTo(idx) {
-  tpState.currentLine = idx;
-  render();
-  scrollTpActive();
-}
-
-function tpNext() {
-  const allLines = [];
-  DATA.forEach(s => { allLines.push({}); if (s.subtitle) allLines.push({}); s.lines.forEach(() => allLines.push({})); if (s.checkin) allLines.push({}); });
-  if (tpState.currentLine < allLines.length - 1) tpState.currentLine++;
-  render();
-  scrollTpActive();
-}
-
-function tpPrev() {
-  if (tpState.currentLine > 0) tpState.currentLine--;
-  render();
-  scrollTpActive();
-}
-
-function tpTogglePlay() {
-  tpState.playing = !tpState.playing;
-  if (tpState.playing) {
-    tpState.interval = setInterval(tpNext, tpState.speed);
-  } else {
-    clearInterval(tpState.interval);
-  }
-  render();
-}
-
-function tpChangeSpeed(delta) {
-  tpState.speed = Math.max(1000, Math.min(8000, tpState.speed + delta));
-  if (tpState.playing) {
-    clearInterval(tpState.interval);
-    tpState.interval = setInterval(tpNext, tpState.speed);
-  }
-  render();
-}
-
-function scrollTpActive() {
-  const active = document.querySelector('.tp-line.active');
-  if (active) active.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-// Keyboard nav
-document.addEventListener('keydown', e => {
-  if (currentMode === 'teleprompter') {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); tpNext(); }
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); tpPrev(); }
-    if (e.key === ' ') { e.preventDefault(); tpTogglePlay(); }
-  }
-});
 
 // Initial render
 render();

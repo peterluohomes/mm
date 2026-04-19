@@ -75,19 +75,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--navy);
 .fill-ctrl-btn{background:var(--white);color:var(--navy);border:1px solid #E2E8F0;padding:10px 20px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s}
 .fill-ctrl-btn:hover{border-color:var(--blue);background:var(--lighter)}
 .fill-ctrl-btn.active{background:var(--blue);color:var(--white);border-color:var(--blue)}
-/* Teleprompter */
-.teleprompter-container{background:#0A0A14;border-radius:var(--radius);padding:40px 32px;min-height:500px;position:relative;overflow:hidden}
-.teleprompter-text{color:rgba(255,255,255,0.35);font-size:22px;line-height:2;transition:all 0.3s}
-.teleprompter-text .tp-line{display:block;padding:8px 0;transition:all 0.4s;cursor:pointer}
-.teleprompter-text .tp-line.active{color:rgba(255,255,255,0.95);font-size:24px;transform:scale(1.01)}
-.teleprompter-text .tp-line.near{color:rgba(255,255,255,0.55)}
-.teleprompter-text .tp-line .tp-anchor{color:var(--orange);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;background:rgba(212,118,10,0.2);padding:2px 6px;border-radius:4px;margin-right:6px}
-.teleprompter-text .tp-line .tp-section-break{display:block;color:var(--blue-light);font-size:13px;font-weight:700;letter-spacing:1px;margin-top:20px;margin-bottom:4px;text-transform:uppercase}
-.tp-controls{display:flex;justify-content:center;gap:12px;margin-top:24px}
-.tp-btn{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.15);padding:10px 24px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s}
-.tp-btn:hover{background:rgba(255,255,255,0.15);color:white}
-.tp-speed{color:rgba(255,255,255,0.5);font-size:13px;text-align:center;margin-top:12px}
-@media(max-width:640px){.nav{flex-wrap:wrap;padding:12px 16px}.nav-modes{width:100%;overflow-x:auto}.nav-btn{white-space:nowrap;font-size:12px;padding:6px 12px}.quiz-options{grid-template-columns:1fr}.quiz-prompt{font-size:22px}.teleprompter-text{font-size:18px}.teleprompter-text .tp-line.active{font-size:20px}}
+@media(max-width:640px){.nav{flex-wrap:wrap;padding:12px 16px}.nav-modes{width:100%;overflow-x:auto}.nav-btn{white-space:nowrap;font-size:12px;padding:6px 12px}.quiz-options{grid-template-columns:1fr}.quiz-prompt{font-size:22px}}
 
 .fl-word{cursor:pointer;transition:all 0.2s;border-bottom:1px dotted var(--orange);padding:0 1px}
 .fl-word:hover{background:rgba(212,118,10,0.05)}
@@ -106,79 +94,79 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--navy);
     <button class="nav-btn" onclick="setMode('quiz')">🧠 Quiz</button>
     <button class="nav-btn" onclick="setMode('fill')">✏️ Fill Blanks</button>
     <button class="nav-btn" onclick="setMode('firstletter')">🔤 First Letter</button>
-    <button class="nav-btn" onclick="setMode('teleprompter')">📺 Teleprompter</button>
+
   </div>
 </nav>
 <div class="container" id="app"></div>
 <script>
 const DATA=[
 {id:"agenda",emoji:"⚡",title:"THE AGENDA (Sitting Down)",cue:"Confident, calm. Reduce their anxiety by showing you have a clear roadmap.",flow:["Promise","Multiple opinions?","3-step roadmap","Permission to ask"],lines:[
-{anchor:"PROMISE",script:"Jane, Mike… Before we dive in, I promise: By the time we finish today, you'll have a clear, customized plan to get your home sold for the absolute maximum the market will pay — with minimal stress."},
-{anchor:"MULTIPLE OPINIONS",script:"Quick question before we start — are you getting multiple opinions on listing your home?"},
+{anchor:"promise",script:"Jane, Mike… Before we dive in, I promise: By the time we finish today, you'll have a clear, customized plan to get your home sold for the absolute maximum the market will pay — with minimal stress."},
+{anchor:"multiple opinions",script:"Quick question before we start — are you getting multiple opinions on listing your home?"},
 {type:"response",text:"If yes: \"Great. Smart sellers often do. What matters most to you in choosing who to work with?\" (Note their answer — address it throughout.)"},
 {type:"response",text:"If no: \"Appreciate the trust. I'll make sure you feel confident we're the right fit.\""},
-{anchor:"ROADMAP",script:"To make sure we cover everything and protect your time, here's our simple 3-step roadmap: Understand your situation and goals, build your tailored marketing plan, and comparative market analysis and pricing strategy."},
-{anchor:"PERMISSION",script:"The first step is the foundation — the more I understand your unique situation, the better I can deliver exactly what you're looking for. With your permission, may I ask a few questions?"},
+{anchor:"roadmap",script:"To make sure we cover everything and protect your time, here's our simple 3-step roadmap: Understand your situation and goals, build your tailored marketing plan, and comparative market analysis and pricing strategy."},
+{anchor:"Permission",script:"The first step is the foundation — the more I understand your unique situation, the better I can deliver exactly what you're looking for. With your permission, may I ask a few questions?"},
 ]},
-{id:"why",emoji:"❓",title:"DISCOVERY PART 1: WHY",cue:"Empathetic, curious. Mirror, echo, reflect. Let them talk 80% of the time.",flow:["Big picture","Route by emotion","Go deeper","Perfect outcome"],lines:[
-{anchor:"BIG PICTURE",script:"Thank you. Let's start with the big picture — what's bringing you to the point of thinking about selling right now?"},
+{id:"why",emoji:"❓",title:"DISCOVERY PART 1: WHY",cue:"Empathetic, curious. Mirror, echo, reflect. Let them talk 80% of the time.",flow:["Big picture","Route by emotion","Now… right time","Perfect outcome"],lines:[
+{anchor:"big picture",script:"Thank you. Let's start with the big picture — what's bringing you to the point of thinking about selling right now?"},
 {type:"stage",text:"Listen carefully and choose the appropriate response"},
 {type:"response",text:"If Positive (Upsizing/Relocation/New chapter): \"That's exciting! What are you looking forward to most about this change? My job is to make this easy so you can focus on what's next.\""},
 {type:"response",text:"If Difficult (Divorce/Debt/Probate/Health): \"Thank you for sharing — I know that's not easy. This stays completely confidential, and I've helped many families in similar situations move forward quickly and discreetly.\""},
-{anchor:"GO DEEPER",script:"What makes now the right time? What's changed recently?"},
-{anchor:"PERFECT OUTCOME",script:"If everything goes perfectly, what does this move really allow you to do next?"},
+{anchor:"now… right time",script:"What makes now the right time? What's changed recently?"},
+{anchor:"perfect outcome",script:"If everything goes perfectly, what does this move really allow you to do next?"},
 ]},
 {id:"where",emoji:"📍",title:"DISCOVERY PART 1: WHERE",cue:"Curious, forward-looking. Connect their motivation to their next chapter.",flow:["Bridge from WHY","Found something?","Still looking?","Reflect back"],lines:[
-{anchor:"JOURNEY",script:"That makes total sense. So where does this journey take you next — have you started looking for your next place, or found something already?"},
+{anchor:"next place",script:"That makes total sense. So where does this journey take you next — have you started looking for your next place, or found something already?"},
 {type:"response",text:"If they've found something: \"That's exciting — tell me about it! What do you love most? Do you already have an accepted offer or a firm closing date?\""},
 {type:"response",text:"If still looking: \"What are you looking for in your next home? And roughly, what price range are you targeting?\" (Helps reverse-engineer needed sale price)"},
-{anchor:"REFLECT BACK",script:"So you're moving to [location/type] because [their reason] — that sounds like a great fit for what you described."},
+{anchor:"reflect back",script:"So you're moving to [location/type] because [their reason] — that sounds like a great fit for what you described."},
 ]},
 {id:"when",emoji:"📅",title:"DISCOVERY PART 1: WHEN",cue:"Practical, protective. You're looking out for their timeline and finances.",flow:["Sell before buy?","Ideal date","Strong offer scenario","Flexibility"],lines:[
-{anchor:"SELL FIRST",script:"To keep you safe financially — does this home need to sell before you can buy the next one?"},
-{anchor:"IDEAL DATE",script:"In your ideal scenario, what's the perfect move-out date? Any must-hit deadlines — job start, school, lease ending?"},
-{anchor:"STRONG OFFER",script:"If we get a strong offer tomorrow, what's the earliest you'd be ready to hand over keys?",cue:"← Use if needed"},
-{anchor:"FLEXIBILITY",script:"Would you need flexibility — like staying a few extra days after closing?",cue:"← Use if needed"},
+{anchor:"sell before buy?",script:"To keep you safe financially — does this home need to sell before you can buy the next one?"},
+{anchor:"ideal date",script:"In your ideal scenario, what's the perfect move-out date? Any must-hit deadlines — job start, school, lease ending?"},
+{anchor:"stronger offer",script:"If we get a strong offer tomorrow, what's the earliest you'd be ready to hand over keys?",cue:"← Use if needed"},
+{anchor:"Flexibility",script:"Would you need flexibility — like staying a few extra days after closing?",cue:"← Use if needed"},
 ]},
-{id:"priorities",emoji:"🎯",title:"PART 2: PRIORITIES",cue:"Direct but warm. Help them rank what matters most.",flow:["Price vs Speed vs Stress","Rank them","Success definition"],lines:[
-{anchor:"MOST IMPORTANT",script:"That gives me a clear picture — thank you. When it comes to selling, what's most important to you? Some people tell me \"the absolute highest price possible\"… others want a quick sale so they can move on… and some just want it to be as low-stress as possible. What feels most important for you?"},
-{type:"response",text:"If they say \"everything\": \"That's very common. If you had to rank them — price, timing, and convenience — how would you order them?\""},
-{anchor:"SUCCESS",script:"When this is all done, what would make you feel like it was a complete success?"},
+{id:"priorities",emoji:"🎯",title:"PART 2: PRIORITIES",cue:"Direct but warm. Help them rank what matters most.",flow:["Price vs Speed vs Stress","Rank them","Complete Success"],lines:[
+{anchor:"what's most important",script:"That gives me a clear picture — thank you. When it comes to selling, what's most important to you? Some people tell me \"the absolute highest price possible\"… others want a quick sale so they can move on… and some just want it to be as low-stress as possible. What feels most important for you?"},
+{anchor:"Rank: price/timing/convenience",script:"That's very common. If you had to rank them — price, timing, and convenience — how would you order them?",cue:"← Use if they say 'everything'"},
+{anchor:"Complete Success",script:"When this is all done, what would make you feel like it was a complete success?"},
 ]},
-{id:"concerns",emoji:"⚠️",title:"PART 2: CONCERNS",cue:"Gentle, protective. Surface the fears they might not volunteer.",flow:["Deal-breakers","Eliminate one worry","Examples if stuck"],lines:[
-{anchor:"DEAL-BREAKERS",script:"Price gets the headlines, but the terms are what keep you safe. Besides price, do you have any deal-breakers? Specific dates? Fixtures you want to keep?"},
-{anchor:"ONE WORRY",script:"I want to take the weight off your shoulders. If you could eliminate one specific worry from this process right now, what would it be?"},
+{id:"concerns",emoji:"⚠️",title:"PART 2: CONCERNS",cue:"Gentle, protective. Surface the fears they might not volunteer.",flow:["Deal Breaker","Weight Off","Manager Together"],lines:[
+{anchor:"Deal Breaker",script:"Price gets the headlines, but the terms are what keep you safe. Besides price, do you have any deal-breakers? Specific dates? Fixtures you want to keep?"},
+{anchor:"Weight Off",script:"I want to take the weight off your shoulders. If you could eliminate one specific worry from this process right now, what would it be?"},
 {type:"stage",text:"If they hesitate, offer examples:"},
 {type:"response",text:"\"Is it strangers walking through your home? The negotiation? Or just the uncertainty of not knowing the timeline?\""},
-{type:"response",text:"After they answer: \"Perfect. That's exactly what we'll manage together.\""},
+{anchor:"Manager Together",script:"Perfect. That's exactly what we'll manage together.",cue:"← After they answer"},
 ]},
-{id:"decision",emoji:"🧭",title:"PART 2: DECISION-MAKING",cue:"Calibrating. Adjust your language based on their experience level.",flow:["Last time sold?","Route by experience","Taken care of","Communication"],lines:[
-{anchor:"LAST TIME",script:"To help me tailor this process — when was the last time you sold a home?"},
+{id:"decision",emoji:"🧭",title:"PART 2: DECISION-MAKING",cue:"Calibrating. Adjust your language based on their experience level.",flow:["Who Else","Short Summary","Last time Sell","Taken Care Of","Communication"],lines:[
+{anchor:"Who Else",script:"One quick question to help me communicate well — who else is involved in this decision? Is it just the two of you, or is there anyone else whose input matters — a family member, a lawyer, an accountant?"},
+{anchor:"Short Summary",script:"Got it — thank you for letting me know. Would it help if I prepared a short summary you can share with them — so they have the same information you have?",cue:"← If yes"},
+{anchor:"Last time Sell",script:"To help me tailor this process — when was the last time you sold a home?"},
 {type:"response",text:"If recent (1-5 years): \"How was that experience? What worked well, and what was missing that you really need this time?\""},
 {type:"response",text:"If long ago (10+ years): \"A lot has changed since then — especially with technology and buyer behavior. I'll guide you through every step so nothing catches you off guard.\""},
 {type:"response",text:"If first time: \"That's exciting — you're in good hands. I'll walk you through every step so you never feel lost or unsure.\""},
-{anchor:"TAKEN CARE OF",script:"When all is said and done, what's the one thing that will make you feel truly taken care of?"},
-{anchor:"COMMUNICATION",script:"For communication — what works best: text, email, or call? And how often for updates: weekly, only when there's news, or something else?"},
+{anchor:"Taken Care Of",script:"When all is said and done, what's the one thing that will make you feel truly taken care of?"},
+{anchor:"Communication",script:"For communication — what works best: text, email, or call? And how often for updates: weekly, only when there's news, or something else?"},
 ]},
-{id:"recap",emoji:"🎬",title:"PART 3: THE RECAP",cue:"Confident playback. Prove you listened. This is your credibility moment.",flow:["Summarize everything","Confirm","Protect equity","Dream price"],lines:[
-{anchor:"STRAIGHT",script:"Just to make sure I've got everything straight…"},
-{anchor:"PLAYBACK",script:"It sounds like the main reason you're selling is [motivation], you're hoping to [next plans], ideally around [timeline]. Your top priorities are [priorities in order], and you want to make sure [key concerns] are handled well. You're looking for an agent who [what they said matters]."},
-{anchor:"MISS ANYTHING",script:"Did I miss anything or get anything wrong? I want to be sure I'm seeing it exactly the way you do."},
+{id:"recap",emoji:"🎬",title:"PART 3: THE RECAP",cue:"Confident playback. Prove you listened. This is your credibility moment.",flow:["Summarize everything","Confirm","Protect… Deliver","Price","Commission"],lines:[
+{anchor:"everything Straight",script:"Just to make sure I've got everything straight…"},
+{anchor:"playback",script:"It sounds like the main reason you're selling is [motivation], you're hoping to [next plans], ideally around [timeline]. Your top priorities are [priorities in order], and you want to make sure [key concerns] are handled well. You're looking for an agent who [what they said matters]."},
+{anchor:"Missing/Wrong",script:"Did I miss anything or get anything wrong? I want to be sure I'm seeing it exactly the way you do."},
 {type:"stage",text:"They confirm"},
-{anchor:"PROTECT EQUITY",script:"Perfect. My job now is to protect your equity and deliver exactly what you've described."},
-{anchor:"DREAM PRICE",script:"Last question — just between us: What's the dream price you're quietly hoping for? Even a ballpark helps.",cue:"← This unlocks their real expectation"},
-{type:"tip",text:"If commission question arises: \"Excellent question — we'll go through every cost line-by-line in Step 3 so you see exactly what you keep. For now, knowing your target helps me build the strongest pricing strategy possible.\""},
-{anchor:"TRANSITION",script:"Transition to Tailored Plan →"},
+{anchor:"Protect… Deliver",script:"Perfect. My job now is to protect your equity and deliver exactly what you've described."},
+{anchor:"Price",script:"Last question — just between us: I want to understand both ends of your range. What's the dream price you're quietly hoping for… and on the other side, is there a floor — a number below which this sale would feel uncomfortable or wouldn't work for your next chapter? Even a ballpark on either end helps me enormously.",cue:"← Unlocks their real expectation"},
+{anchor:"Commission",script:"Excellent question — we'll go through every cost line-by-line in Step 3 so you see exactly what you keep. For now, knowing your target helps me build the strongest pricing strategy possible.",cue:"← If commission question arises"},
 ]}
 ];
 
 const ALL_ANCHORS=[];DATA.forEach(s=>s.lines.forEach(l=>{if(l.anchor)ALL_ANCHORS.push({...l,sectionTitle:s.title,sectionEmoji:s.emoji})}));
-let currentMode='read',quizState={index:0,score:0,answered:[]},tpState={currentLine:0,playing:false,interval:null,speed:3000},fillDifficulty=3;
+let currentMode='read',quizState={index:0,score:0,answered:[]},fillDifficulty=3;
 
-function setMode(m){currentMode=m;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.querySelector(`.nav-btn[onclick="setMode('${m}')"]`).classList.add('active');if(m==='quiz')quizState={index:0,score:0,answered:new Array(ALL_ANCHORS.length).fill(null)};if(m==='firstletter'){}
-  if(m==='teleprompter'){tpState.currentLine=0;tpState.playing=false;clearInterval(tpState.interval)}render()}
+function setMode(m){currentMode=m;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.querySelector(`.nav-btn[onclick="setMode('${m}')"]`).classList.add('active');if(m==='quiz')quizState={index:0,score:0,answered:new Array(ALL_ANCHORS.length).fill(null)};render()}
 
-function render(){const app=document.getElementById('app');switch(currentMode){case'read':app.innerHTML=renderRead();break;case'quiz':app.innerHTML=renderQuiz();break;case'fill':app.innerHTML=renderFill();break;case'firstletter':app.innerHTML=renderFirstLetter();break;case'teleprompter':app.innerHTML=renderTeleprompter();break}}
+function render(){const app=document.getElementById('app');switch(currentMode){case'read':app.innerHTML=renderRead();break;case'quiz':app.innerHTML=renderQuiz();break;case'fill':app.innerHTML=renderFill();break;case'firstletter':app.innerHTML=renderFirstLetter();break;}}
 
 function renderRead(){return DATA.map(section=>`<div class="section"><div class="section-header" onclick="toggleSection(this)"><span class="emoji">${section.emoji}</span>${section.title}<span class="toggle">▼</span></div><div class="section-body"><div class="delivery-cue">${section.cue}</div>${section.flow?`<div class="flow-map"><span class="label">Flow:</span>${section.flow.map((f,i)=>`<span class="flow-step">${f}</span>${i<section.flow.length-1?'<span class="flow-arrow">→</span>':''}`).join('')}</div>`:'' }${section.lines.map(line=>{if(line.type==='response')return`<div class="response-box">${line.text}</div>`;if(line.type==='tip')return`<div class="tip-box">${line.text}</div>`;if(line.type==='stage')return`<div class="stage-dir">(${line.text})</div>`;let h='';if(line.beat)h+=`<div class="beat-label">${line.beat}</div>`;h+=`<div class="anchor-line"><span class="anchor-word">${line.anchor}</span><span class="anchor-script">${line.script}</span>${line.cue?`<span class="anchor-cue">${line.cue}</span>`:''}</div>`;return h}).join('')}</div></div>`).join('')}
 
@@ -250,16 +238,8 @@ function renderFirstLetter(){
   }).join('')+'</div>';
 }
 
-function renderTeleprompter(){const allLines=[];DATA.forEach(s=>{allLines.push({type:'section',text:`${s.emoji} ${s.title}`});s.lines.forEach(l=>{if(l.type==='response')allLines.push({type:'response',text:`↩ ${l.text}`});else if(l.type==='tip')allLines.push({type:'tip',text:`💡 ${l.text}`});else if(l.type==='stage')allLines.push({type:'stage',text:`(${l.text})`});else if(l.anchor)allLines.push({type:'line',anchor:l.anchor,text:l.script})})});return`<div class="teleprompter-container"><div class="teleprompter-text">${allLines.map((l,i)=>{const cls=i===tpState.currentLine?'active':Math.abs(i-tpState.currentLine)<=2?'near':'';if(l.type==='section')return`<span class="tp-line ${cls}" onclick="tpGoTo(${i})"><span class="tp-section-break">${l.text}</span></span>`;if(l.type==='response'||l.type==='tip')return`<span class="tp-line ${cls}" onclick="tpGoTo(${i})" style="font-style:italic;font-size:16px;color:rgba(249,168,37,0.7);">${l.text}</span>`;if(l.type==='stage')return`<span class="tp-line ${cls}" onclick="tpGoTo(${i})" style="font-style:italic;font-size:16px;">${l.text}</span>`;return`<span class="tp-line ${cls}" onclick="tpGoTo(${i})"><span class="tp-anchor">${l.anchor}</span>${l.text}</span>`}).join('')}</div></div><div class="tp-controls"><button class="tp-btn" onclick="tpPrev()">← Prev</button><button class="tp-btn" onclick="tpTogglePlay()">${tpState.playing?'⏸ Pause':'▶ Play'}</button><button class="tp-btn" onclick="tpNext()">Next →</button></div><div class="tp-speed">Speed: <button class="tp-btn" style="padding:4px 12px;font-size:12px;" onclick="tpChangeSpeed(-500)">−</button> ${(tpState.speed/1000).toFixed(1)}s <button class="tp-btn" style="padding:4px 12px;font-size:12px;" onclick="tpChangeSpeed(500)">+</button> &nbsp;|&nbsp; Arrow keys to navigate</div>`}
-
-function tpGoTo(i){tpState.currentLine=i;render();scrollTpActive()}
-function tpNext(){const n=[];DATA.forEach(s=>{n.push({});s.lines.forEach(()=>n.push({}))});if(tpState.currentLine<n.length-1)tpState.currentLine++;render();scrollTpActive()}
-function tpPrev(){if(tpState.currentLine>0)tpState.currentLine--;render();scrollTpActive()}
-function tpTogglePlay(){tpState.playing=!tpState.playing;if(tpState.playing)tpState.interval=setInterval(tpNext,tpState.speed);else clearInterval(tpState.interval);render()}
-function tpChangeSpeed(d){tpState.speed=Math.max(1000,Math.min(8000,tpState.speed+d));if(tpState.playing){clearInterval(tpState.interval);tpState.interval=setInterval(tpNext,tpState.speed)}render()}
-function scrollTpActive(){const a=document.querySelector('.tp-line.active');if(a)a.scrollIntoView({behavior:'smooth',block:'center'})}
-document.addEventListener('keydown',e=>{if(currentMode==='teleprompter'){if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();tpNext()}if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();tpPrev()}if(e.key===' '){e.preventDefault();tpTogglePlay()}}});
 render();
+
 </script>
 </body>
 </html>

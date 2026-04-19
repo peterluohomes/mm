@@ -76,20 +76,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--navy);
 .fill-ctrl-btn{background:var(--white);color:var(--navy);border:1px solid #E2E8F0;padding:10px 20px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s}
 .fill-ctrl-btn:hover{border-color:var(--blue);background:var(--lighter)}
 .fill-ctrl-btn.active{background:var(--blue);color:var(--white);border-color:var(--blue)}
-/* Teleprompter */
-.teleprompter-container{background:#0A0A14;border-radius:var(--radius);padding:40px 32px;min-height:500px;position:relative;overflow:hidden}
-.teleprompter-text{color:rgba(255,255,255,0.35);font-size:22px;line-height:2;transition:all 0.3s}
-.teleprompter-text .tp-line{display:block;padding:8px 0;transition:all 0.4s;cursor:pointer}
-.teleprompter-text .tp-line.active{color:rgba(255,255,255,0.95);font-size:24px;transform:scale(1.01)}
-.teleprompter-text .tp-line.near{color:rgba(255,255,255,0.55)}
-.teleprompter-text .tp-line .tp-anchor{color:var(--orange);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;background:rgba(212,118,10,0.2);padding:2px 6px;border-radius:4px;margin-right:6px}
-.teleprompter-text .tp-line .tp-section-break{display:block;color:var(--blue-light);font-size:13px;font-weight:700;letter-spacing:1px;margin-top:20px;margin-bottom:4px;text-transform:uppercase}
-.teleprompter-text .tp-line .tp-action{color:#5B7FDB;font-size:14px;font-style:italic}
-.tp-controls{display:flex;justify-content:center;gap:12px;margin-top:24px}
-.tp-btn{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.15);padding:10px 24px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s}
-.tp-btn:hover{background:rgba(255,255,255,0.15);color:white}
-.tp-speed{color:rgba(255,255,255,0.5);font-size:13px;text-align:center;margin-top:12px}
-@media(max-width:640px){.nav{flex-wrap:wrap;padding:12px 16px}.nav-modes{width:100%;overflow-x:auto}.nav-btn{white-space:nowrap;font-size:12px;padding:6px 12px}.quiz-options{grid-template-columns:1fr}.quiz-prompt{font-size:22px}.teleprompter-text{font-size:18px}.teleprompter-text .tp-line.active{font-size:20px}}
+@media(max-width:640px){.nav{flex-wrap:wrap;padding:12px 16px}.nav-modes{width:100%;overflow-x:auto}.nav-btn{white-space:nowrap;font-size:12px;padding:6px 12px}.quiz-options{grid-template-columns:1fr}.quiz-prompt{font-size:22px}}
 
 .fl-word{cursor:pointer;transition:all 0.2s;border-bottom:1px dotted var(--orange);padding:0 1px}
 .fl-word:hover{background:rgba(212,118,10,0.05)}
@@ -108,102 +95,72 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--navy);
     <button class="nav-btn" onclick="setMode('quiz')">🧠 Quiz</button>
     <button class="nav-btn" onclick="setMode('fill')">✏️ Fill Blanks</button>
     <button class="nav-btn" onclick="setMode('firstletter')">🔤 First Letter</button>
-    <button class="nav-btn" onclick="setMode('teleprompter')">📺 Teleprompter</button>
   </div>
 </nav>
 <div class="container" id="app"></div>
 <script>
 const DATA=[
-{id:"greeting",emoji:"👋",title:"PART 1: GREETING",cue:"Warm, genuine, unhurried. You're a guest in their home — show respect.",flow:["Handshake","Appreciate","Notice feature","Compliment"],lines:[
+{id:"arrival",emoji:"👋",title:"ARRIVAL",cue:"Warm, genuine, unhurried. You're a guest in their home — show respect.",flow:["Greeting","Praise","Permission","Two Lenses","Protect Both"],lines:[
 {type:"action",text:"Firm handshake, eye contact, genuine smile. Pause at the door."},
-{anchor:"APPRECIATE",script:"Thanks for having me. I know prep takes effort — I really appreciate the time."},
+{anchor:"Greeting",script:"Thanks for having me. I know prep takes effort — I really appreciate the time."},
 {type:"action",text:"Stop walking. Look at a specific feature (landscaping, door, entryway)."},
-{anchor:"FRONT PORCH",script:"Before we go in — I love this front porch. It has real charm. How do you typically use it?"},
+{anchor:"Praise",script:"Before we go in — I love this front porch. It has real charm. How do you typically use it?"},
 {type:"response",text:"Wait for their answer. Support it: I can tell. You have done a great job with it."},
-]},
-{id:"permission",emoji:"🎒",title:"PERMISSION",cue:"Quick, casual. Sets you as a guest, not an intruder.",lines:[
-{anchor:"BAG",script:"Do you mind if I set my bag down right here?"},
-]},
-{id:"twolenses",emoji:"👁️",title:"THE TWO LENSES METHOD",cue:"Stand still. Grounded authority. This is a framing moment — don't rush it.",flow:["Stop","Two angles","Memories + Market","Protect both"],lines:[
+{anchor:"Permission",script:"Do you mind if I set my bag down right here?"},
 {type:"action",text:"Stand still. Do not start the tour yet."},
-{anchor:"TWO ANGLES",script:"Before we walk through, I want to explain the two angles I'll be looking at your home from. First, I'll see it the way YOU do — as a place full of memories and meaning. Then I'll look at it the way the MARKET does — as a product buyers are comparing against others.",cue:"← pause between the two angles"},
-{anchor:"PROTECT BOTH",script:"My job is to protect both — the home you've loved and the equity you've built."},
+{anchor:"Two Lenses",script:"Before we walk through, I want to explain the two angles I'll be looking at your home from. First, I'll see it the way YOU do — as a place full of memories and meaning. Then I'll look at it the way the MARKET does — as a product buyers are comparing against others.",cue:"← pause between the two angles"},
+{anchor:"Protect Both",script:"My job is to protect both — the home you've loved and the equity you've built."},
 ]},
-{id:"tourtransition",emoji:"🚶",title:"TOUR TRANSITION",cue:"Energetic, curious. Hand them the lead — they're the guide now.",lines:[
-{anchor:"LEAD THE WAY",script:"Great — please lead the way! Show me what you fell in love with. That's exactly what buyers need to hear."},
-{anchor:"NOTES",script:"I will take notes so I do not miss any special details."},
-]},
-{id:"entrance",emoji:"🚪",title:"THE ENTRANCE (First 90 Seconds)",cue:"Genuine wonder. Notice things. Ask with real curiosity.",flow:["Natural light","What made you say yes","Upgrades","Friends notice"],lines:[
-{anchor:"LIGHT",script:"Wow, look at this natural light. What time of day is the light best in here?"},
-{anchor:"YES MOMENT",script:"When you bought this house, what was the one thing that made you say Yes?"},
-{anchor:"UPGRADES",script:"The windows and doors feel solid. What upgrades have you done here?"},
-{anchor:"FRIENDS NOTICE",script:"Quick question — when friends visit, what do they usually notice first?"},
+{id:"tour",emoji:"🚶",title:"TOUR",cue:"Energetic, curious. Hand them the lead — they're the guide now.",flow:["Tour Transition","The Entrance","Living Area","Kitchen","Bedrooms","Bathrooms","Basement","Garage","Exterior","Mechanicals"],lines:[
+{anchor:"Tour Transition",script:"Great — please lead the way! Show me what you fell in love with. That's exactly what buyers need to hear. I will take notes so I do not miss any special details."},
+{beat:"The Entrance",anchor:"The Entrance",script:"Wow, look at this natural light. What time of day is the light best in here? When you bought this house, what was the one thing that made you say Yes? The windows and doors feel solid. What upgrades have you done here? Quick question — when friends visit, what do they usually notice first?"},
 {type:"response",text:"After they answer: Perfect. That is exactly what every buyer will feel walking in."},
-]},
-{id:"living",emoji:"🛋️",title:"LIVING AREA",cue:"Warm, nostalgic. Let them relive good memories in this room.",lines:[
-{anchor:"FAVORITE MEMORY",script:"This room pulls you in. Tell me your favorite memory here — holiday mornings, game nights?"},
+{beat:"Living Area",anchor:"Living Area",script:"This room pulls you in. Tell me your favorite memory here — holiday mornings, game nights? The light here is beautiful. What time of day do you love it most? That is exactly when we will bring in the photographer. How attached are you to the current furniture layout? One thing I often ask sellers — how do you feel about packing away roughly half the items on shelves, counters, and walls before we shoot photos?"},
 {type:"response",text:"After they share: That feeling is what sells the home. Buyers remember stories, not square footage."},
-{anchor:"PHOTOGRAPHER",script:"The light here is beautiful. What time of day do you love it most? That is exactly when we will bring in the photographer."},
-]},
-{id:"kitchen",emoji:"🍳",title:"KITCHEN (Most Important Room)",cue:"Impressed, detail-oriented. This room sells homes — treat it that way.",flow:["Guests comment","Storage","Appliances","One change"],lines:[
-{anchor:"GUESTS COMMENT",script:"What do guests comment about your kitchen?"},
-{anchor:"STORAGE",script:"Great storage. What storage solutions do you have inside the cabinets? Buyers love those details."},
-{anchor:"APPLIANCES",script:"Appliances look well-maintained. What do you know about the appliances — age, warranties? Buyers always ask."},
-{anchor:"ONE CHANGE",script:"If you could change one thing about this kitchen, what would it be?"},
-{type:"tip",text:"Clear counters make the kitchen look twice as big on camera."},
-]},
-{id:"bedrooms",emoji:"🛏️",title:"BEDROOMS",cue:"Peaceful, observant. Each room has a story.",lines:[
-{beat:"Main Bedroom",anchor:"RECHARGE",script:"This feels peaceful. How does this space help you recharge?"},
-{anchor:"CLOSET",script:"This closet has great depth. What would help it photograph even bigger?"},
-{beat:"Other Bedrooms",anchor:"FLEXIBLE",script:"This room is flexible. How has it served you best? Office, guest room, gym? Knowing that helps me target the right buyer."},
-{anchor:"WINDOWS",script:"Do these windows open easily? Let us smooth out this latch — we want buyers focusing on the view, not the handle."},
-]},
-{id:"bathrooms",emoji:"🚿",title:"BATHROOMS",cue:"Quick, positive. Compliment what's there, plant the photo seed.",lines:[
-{anchor:"FRESH",script:"The tile and fixtures look fresh. Updated bathrooms add a lot of value."},
-{anchor:"SPA LOOK",script:"For the photos, we will want that clean spa look — it gets way more clicks. I will send you a quick checklist; most sellers knock it out in an hour."},
-]},
-{id:"basement",emoji:"🏗️",title:"BASEMENT",cue:"Curious about potential. Validate their care.",flow:["Dry + solid","Dream for space","Electrical"],lines:[
-{anchor:"DRY",script:"This space feels dry and solid. What systems do you have in place to keep this space dry?"},
-{anchor:"DREAM",script:"What was your dream for this space before life took you in a new direction? Potential is just as valuable as finished space."},
-{anchor:"ELECTRICAL",script:"The electrical panel looks modern. What electrical upgrades have you done — EV charger, panel, outlets?"},
-]},
-{id:"garage",emoji:"🚗",title:"GARAGE",cue:"Quick, practical.",lines:[
-{anchor:"GARAGE USE",script:"How do you use your garage — storage, workshop, parking? Buyers always want to know."},
-]},
-{id:"exterior",emoji:"🌳",title:"EXTERIOR",cue:"Appreciative, seasonal. See the home the way a neighbor would.",flow:["Front yard","Backyard","Roof","Neighborhood secret"],lines:[
-{anchor:"SEASONS",script:"The front yard is welcoming. What comes up throughout the seasons?"},
-{anchor:"SUMMER EVENING",script:"The backyard feels like part of the house. How do you use this backyard on a summer evening?"},
-{anchor:"ROOF",script:"The roof looks good. What do you know about the roof — age, repairs? Newer roofs save sellers thousands in negotiations."},
-{anchor:"NEIGHBORHOOD",script:"What's your favorite thing about the neighborhood that someone driving by wouldn't know?"},
-]},
-{id:"mechanicals",emoji:"🔧",title:"MECHANICALS",cue:"Practical, affirming. Turn maintenance into value.",lines:[
-{anchor:"AGE",script:"Roughly how old are the furnace, A/C, and water heater?"},
+{beat:"Kitchen",anchor:"Kitchen",script:"What do guests comment about your kitchen? Great storage. What storage solutions do you have inside the cabinets? Buyers love those details. Appliances look well-maintained. What do you know about the appliances — age, warranties? Buyers always ask. If you could change one thing about this kitchen, what would it be?"},
+{type:"tip",text:"Clear counters make the kitchen look twice as big on camera. Note which small appliances are out."},
+{beat:"Main Bedroom",anchor:"Bedrooms",script:"This feels peaceful. How does this space help you recharge? This closet has great depth. What would help it photograph even bigger? This room is flexible. How has it served you best? Office, guest room, gym? Do these windows open easily? Quick question while we're upstairs — when buyers come through for showings, homes always present best when the family steps out for the appointment. Are you and the kids (and any pets) able to do that on short notice?"},
+{beat:"Bathrooms",anchor:"Bathrooms",script:"The tile and fixtures look fresh. Updated bathrooms add a lot of value. For the photos, we will want that clean spa look — it gets way more clicks. I will send you a quick checklist; most sellers knock it out in an hour."},
+{type:"tip",text:"Note any small deferred items silently: caulk lines, slow drains, loose towel bars, burnt-out bulbs."},
+{beat:"Basement",anchor:"Basement",script:"This space feels dry and solid. What systems do you have in place to keep this space dry? What was your dream for this space before life took you in a new direction? Potential is just as valuable as finished space. The electrical panel looks modern. What electrical upgrades have you done — EV charger, panel, outlets?"},
+{beat:"Garage",anchor:"Garage",script:"How do you use your garage — storage, workshop, parking? Buyers always want to know."},
+{beat:"Exterior",anchor:"Exterior",script:"The front yard is welcoming. What comes up throughout the seasons? The backyard feels like part of the house. How do you use this backyard on a summer evening? The roof looks good. What do you know about the roof — age, repairs? Newer roofs save sellers thousands in negotiations. What's your favorite thing about the neighborhood that someone driving by wouldn't know?"},
+{beat:"Mechanicals",anchor:"Mechanicals",script:"Roughly how old are the furnace, A/C, and water heater? Do you happen to have service records or receipts? Having them in a tidy folder during showings builds buyer confidence fast."},
 {type:"response",text:"After they answer: This proves you have taken great care of the home. Buyers pay more for peace of mind."},
 ]},
-{id:"digging",emoji:"🔍",title:"WRAP-UP: DIGGING DEEPER",cue:"Shift tone — warmer, slower. You're transitioning from tour to conversation.",flow:["Emotion → Facts","Major upgrades","Next renovation","What you'll miss"],lines:[
-{anchor:"EMOTION + FACTS",script:"The feeling I'm getting as we walk through is really special — and that emotion is going to help sell this home. And to get the optimal price, we need to back it up with facts — the things buyers can't see."},
-{anchor:"MAJOR UPGRADES",script:"So let me ask you this: over the years, have you made any major upgrades to the windows, insulation, or the plumbing and electrical systems? These are significant value-adders during appraisal.",cue:"← Listen and acknowledge: \"That's significant,\" \"That's going to help a lot\""},
-{anchor:"NEXT RENOVATION",script:"That's really helpful — those hard metrics help the bank match our price. Now let me ask this: if you were going to stay another few years, what would have been your next renovation project?"},
-{anchor:"MISS MOST",script:"And finally, a more personal question on behalf of whoever ends up calling this place home: when you move, what's the one thing you're going to miss the most?",cue:"← This is usually a powerful, emotional moment. Listen deeply."},
+{id:"prepplan",emoji:"📋",title:"PREPARATION PLAN",cue:"Stop near the back door or hallway — still standing, still inside the home. 2–3 minutes max. Frame as planning, not grading.",flow:["Quick planning","Interior Designer","Paint","Prelisting-inspection","Off-limits","Time & Budget","response","Short Plan"],lines:[
+{anchor:"Quick planning",script:"Before we head back and sit down, let me ask you a few quick planning questions. There are no right or wrong answers — I just need to understand where you sit so the plan I build for you actually fits your life. Some sellers want to do a lot before listing, some want to do as little as possible, and both can absolutely work."},
+{anchor:"Interior Designer",script:"I work with an interior designer who can come in and provide a 'Priority One' list — just the highest-impact changes, no full redesign required. It can be as simple as rearranging furniture to open up a sightline, swapping out light bulbs for a warmer tone, or helping you pick the right neutral paint color if we decide to freshen up a room. Sometimes it's just one or two small moves that completely change how a space photographs and shows. Would you be open to that consultation? It's complimentary as part of my service.",cue:"← Script 1: Interior Designer Consult"},
+{anchor:"Paint",script:"Are you open to a fresh coat of neutral paint in one or two key rooms if I felt it would meaningfully move the price? I'll only flag walls where the color is bold enough to narrow the buyer pool — nothing cosmetic for the sake of it.",cue:"← Script 2"},
+{anchor:"Prelisting-inspection",script:"Some sellers like to get ahead of any surprises by doing a pre-listing inspection. Is that something you'd consider, or would you rather handle issues if and when they come up?",cue:"← Script 3"},
+{anchor:"Off-limits",script:"Is there anything in the home you'd prefer not to change, move, or touch? I want to know now so I can plan around it.",cue:"← Script 4"},
+{anchor:"Time & Budget",script:"Last one — based on what you've shared, it sounds like you're open to some things and want to skip others. Does that match how you're thinking about time and budget overall — a light-touch prep, or would you actually go further if I felt it was worth it? Some sellers invest a little upfront to maximize the sale price; others prefer to list as-is and price accordingly.",cue:"← Script 5"},
+{anchor:"response",script:"Listen. Take notes. Do not push back on any 'no' — just acknowledge and capture. Their appetite answers shape the prep plan you'll deliver after the Price Presentation.",cue:"← If time is tight, Questions 1, 4, and 5 are the non-negotiables"},
+{anchor:"Short Plan",script:"This is really helpful — thank you. Based on everything you just shared, I have a clear picture of what you're open to. Once we've agreed on strategy and price at the table, I'll put together a short prep plan built around your answers — so you'll know exactly what moves the needle and what doesn't. Nothing wasted, nothing imposed."},
 ]},
-{id:"summary",emoji:"🎬",title:"WRAP-UP: SUMMARY & MOTIVATION",cue:"Grateful, impressed. Then shift to strategic — the scale question is your transition tool.",flow:["Thank + impressed","Scale 1-10","Route by answer","Move to table"],lines:[
-{anchor:"THANK YOU",script:"Thank you so much for the tour and for sharing these meaningful stories. Honestly, I'm very impressed with how beautifully you've loved and cared for this home."},
-{anchor:"SCALE 1-10",script:"Before we get into the market data and pricing strategy, I'd like a quick sense of where you stand. On a scale of 1 to 10 — where 10 means \"we're confident and ready to take photos and list right now,\" and 1 means \"we're still hesitating and haven't fully decided to sell\" — where would you put yourselves today?",cue:"← Pause and listen"},
-{type:"response",text:"IF 8-10: Perfect! That tells me you're ready to move decisively. Thank you for that clarity — it really helps me serve you best."},
-{type:"response",text:"IF 1-7: I completely understand. Selling is a big milestone. What's the main thing holding you back from feeling fully ready right now? (Listen)"},
-{anchor:"DINING TABLE",script:"Thank you again for opening up and for showing me your wonderful home. Now I'd like to sit down with you and talk about the best path forward to achieve the strongest possible outcome. Shall we move to the dining table?"},
+{id:"digging",emoji:"🔍",title:"WRAP-UP: DIGGING DEEPER",cue:"Shift tone — warmer, slower. You're transitioning from tour to conversation.",flow:["Digging-feeling","Digging-Upgrade","Digging-Next Renovation","Digging-Miss Most"],lines:[
+{anchor:"Digging-feeling",script:"And you know, the feeling I'm getting as we walk through is really special — and that emotion is going to help sell this home. And to get the optimal price, we need to back it up with facts — the things buyers can't see."},
+{anchor:"Digging-Upgrade",script:"So let me ask you this: over the years, have you made any major upgrades to the windows, insulation, or the plumbing and electrical systems? These are significant value-adders during appraisal.",cue:"← Listen and acknowledge: \"That's significant,\" \"That's going to help a lot\""},
+{anchor:"Digging-Next Renovation",script:"That's really helpful — those hard metrics help the bank match our price. Now let me ask this: if you were going to stay another few years, what would have been your next renovation project?"},
+{anchor:"Digging-Miss Most",script:"And finally, a more personal question on behalf of whoever ends up calling this place home: when you move, what's the one thing you're going to miss the most?",cue:"← This is usually a powerful, emotional moment. Listen deeply."},
+]},
+{id:"summary",emoji:"🎬",title:"SUMMARY & MOTIVATION",cue:"Grateful, impressed. Then shift to strategic — the scale question is your transition tool.",flow:["Impressed","Motivation","score 8-10","Score 1-7","transition"],lines:[
+{anchor:"Impressed",script:"Thank you so much for the tour and for sharing these meaningful stories. Honestly, I'm very impressed with how beautifully you've loved and cared for this home."},
+{anchor:"Motivation",script:"Before we get into the market data and pricing strategy, I'd like a quick sense of where you stand. On a scale of 1 to 10 — where 10 means \"we're confident and ready to take photos and list right now,\" and 1 means \"we're still hesitating and haven't fully decided to sell\" — where would you put yourselves today?",cue:"← Pause and listen"},
+{anchor:"score 8-10",script:"Perfect! That tells me you're ready to move decisively. Thank you for that clarity — it really helps me serve you best.",cue:"← IF 8-10"},
+{anchor:"Score 1-7",script:"I completely understand. Selling is a big milestone. What's the main thing holding you back from feeling fully ready right now?",cue:"← IF 1-7"},
+{anchor:"transition",script:"Thank you again for opening up and for showing me your wonderful home. Now I'd like to sit down with you and talk about the best path forward to achieve the strongest possible outcome. Shall we move to the dining table?"},
 ]}
 ];
 
 const ALL_ANCHORS=[];
 DATA.forEach(s=>s.lines.forEach(l=>{if(l.anchor)ALL_ANCHORS.push({...l,sectionTitle:s.title,sectionEmoji:s.emoji})}));
 
-let currentMode='read',quizState={index:0,score:0,answered:[],showingReveal:false},tpState={currentLine:0,playing:false,interval:null,speed:3000},fillDifficulty=3;
+let currentMode='read',quizState={index:0,score:0,answered:[],showingReveal:false},fillDifficulty=3;
 
-function setMode(m){currentMode=m;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.querySelector(`.nav-btn[onclick="setMode('${m}')"]`).classList.add('active');if(m==='quiz')quizState={index:0,score:0,answered:new Array(ALL_ANCHORS.length).fill(null),showingReveal:false};if(m==='firstletter'){}
-  if(m==='teleprompter'){tpState.currentLine=0;tpState.playing=false;clearInterval(tpState.interval)}render()}
+function setMode(m){currentMode=m;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.querySelector(`.nav-btn[onclick="setMode('${m}')"]`).classList.add('active');if(m==='quiz')quizState={index:0,score:0,answered:new Array(ALL_ANCHORS.length).fill(null),showingReveal:false};render()}
 
-function render(){const app=document.getElementById('app');switch(currentMode){case'read':app.innerHTML=renderRead();break;case'quiz':app.innerHTML=renderQuiz();break;case'fill':app.innerHTML=renderFill();break;case'firstletter':app.innerHTML=renderFirstLetter();break;case'teleprompter':app.innerHTML=renderTeleprompter();break}}
+function render(){const app=document.getElementById('app');switch(currentMode){case'read':app.innerHTML=renderRead();break;case'quiz':app.innerHTML=renderQuiz();break;case'fill':app.innerHTML=renderFill();break;case'firstletter':app.innerHTML=renderFirstLetter();break;}}
 
 function renderRead(){return DATA.map(section=>`<div class="section"><div class="section-header" onclick="toggleSection(this)"><span class="emoji">${section.emoji}</span>${section.title}<span class="toggle">▼</span></div><div class="section-body"><div class="delivery-cue">${section.cue}</div>${section.flow?`<div class="flow-map"><span class="label">Flow:</span>${section.flow.map((f,i)=>`<span class="flow-step">${f}</span>${i<section.flow.length-1?'<span class="flow-arrow">→</span>':''}`).join('')}</div>`:'' }${section.lines.map(line=>{if(line.type==='action')return`<div class="action-box">${line.text}</div>`;if(line.type==='response')return`<div class="response-box">${line.text}</div>`;if(line.type==='tip')return`<div class="tip-box">${line.text}</div>`;if(line.type==='stage')return`<div class="stage-dir">(${line.text})</div>`;let h='';if(line.beat)h+=`<div class="beat-label">${line.beat}</div>`;h+=`<div class="anchor-line"><span class="anchor-word">${line.anchor}</span><span class="anchor-script">${line.script}</span>${line.cue?`<span class="anchor-cue">${line.cue}</span>`:''}</div>`;return h}).join('')}</div></div>`).join('')}
 
@@ -272,15 +229,7 @@ function renderFirstLetter(){
   }).join('')+'</div>';
 }
 
-function renderTeleprompter(){const allLines=[];DATA.forEach(s=>{allLines.push({type:'section',text:`${s.emoji} ${s.title}`});s.lines.forEach(l=>{if(l.type==='action')allLines.push({type:'action',text:`⚡ ${l.text}`});else if(l.type==='response')allLines.push({type:'response',text:`↩ ${l.text}`});else if(l.type==='tip')allLines.push({type:'tip',text:`💡 ${l.text}`});else if(l.anchor)allLines.push({type:'line',anchor:l.anchor,text:l.script})})});return`<div class="teleprompter-container" id="tp-box"><div class="teleprompter-text" id="tp-text">${allLines.map((l,i)=>{const cls=i===tpState.currentLine?'active':Math.abs(i-tpState.currentLine)<=2?'near':'';if(l.type==='section')return`<span class="tp-line ${cls}" data-idx="${i}" onclick="tpGoTo(${i})"><span class="tp-section-break">${l.text}</span></span>`;if(l.type==='action')return`<span class="tp-line ${cls}" data-idx="${i}" onclick="tpGoTo(${i})"><span class="tp-action">${l.text}</span></span>`;if(l.type==='response'||l.type==='tip')return`<span class="tp-line ${cls}" data-idx="${i}" onclick="tpGoTo(${i})" style="font-style:italic;font-size:16px;color:rgba(249,168,37,0.7);">${l.text}</span>`;return`<span class="tp-line ${cls}" data-idx="${i}" onclick="tpGoTo(${i})"><span class="tp-anchor">${l.anchor}</span>${l.text}</span>`}).join('')}</div></div><div class="tp-controls"><button class="tp-btn" onclick="tpPrev()">← Prev</button><button class="tp-btn" onclick="tpTogglePlay()" id="tp-play-btn">${tpState.playing?'⏸ Pause':'▶ Play'}</button><button class="tp-btn" onclick="tpNext()">Next →</button></div><div class="tp-speed">Speed: <button class="tp-btn" style="padding:4px 12px;font-size:12px;" onclick="tpChangeSpeed(-500)">−</button> ${(tpState.speed/1000).toFixed(1)}s <button class="tp-btn" style="padding:4px 12px;font-size:12px;" onclick="tpChangeSpeed(500)">+</button> &nbsp;|&nbsp; Arrow keys to navigate</div>`}
 
-function tpGoTo(i){tpState.currentLine=i;render();scrollTpActive()}
-function tpNext(){const allLines=[];DATA.forEach(s=>{allLines.push({});s.lines.forEach(()=>allLines.push({}))});if(tpState.currentLine<allLines.length-1)tpState.currentLine++;render();scrollTpActive()}
-function tpPrev(){if(tpState.currentLine>0)tpState.currentLine--;render();scrollTpActive()}
-function tpTogglePlay(){tpState.playing=!tpState.playing;if(tpState.playing)tpState.interval=setInterval(tpNext,tpState.speed);else clearInterval(tpState.interval);render()}
-function tpChangeSpeed(d){tpState.speed=Math.max(1000,Math.min(8000,tpState.speed+d));if(tpState.playing){clearInterval(tpState.interval);tpState.interval=setInterval(tpNext,tpState.speed)}render()}
-function scrollTpActive(){const a=document.querySelector('.tp-line.active');if(a)a.scrollIntoView({behavior:'smooth',block:'center'})}
-document.addEventListener('keydown',e=>{if(currentMode==='teleprompter'){if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();tpNext()}if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();tpPrev()}if(e.key===' '){e.preventDefault();tpTogglePlay()}}});
 render();
 </script>
 </body>
