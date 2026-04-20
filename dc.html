@@ -137,7 +137,7 @@ const DATA=[
 {anchor:"Deal Breaker",script:"Price gets the headlines, but the terms are what keep you safe. Besides price, do you have any deal-breakers? Specific dates? Fixtures you want to keep?"},
 {anchor:"Weight Off",script:"I want to take the weight off your shoulders. If you could eliminate one specific worry from this process right now, what would it be?"},
 {type:"stage",text:"If they hesitate, offer examples:"},
-{type:"response",text:"\"Is it strangers walking through your home? The negotiation? Or just the uncertainty of not knowing the timeline?\""},
+{type:"stage",text:"Examples: \"Is it strangers walking through your home? The negotiation? Or just the uncertainty of not knowing the timeline?\""},
 {anchor:"Manager Together",script:"Perfect. That's exactly what we'll manage together.",cue:"← After they answer"},
 ]},
 {id:"decision",emoji:"🧭",title:"PART 2: DECISION-MAKING",cue:"Calibrating. Adjust your language based on their experience level.",flow:["Who Else","Short Summary","Last time Sell","Taken Care Of","Communication"],lines:[
@@ -147,7 +147,7 @@ const DATA=[
 {type:"response",text:"If recent (1-5 years): \"How was that experience? What worked well, and what was missing that you really need this time?\""},
 {type:"response",text:"If long ago (10+ years): \"A lot has changed since then — especially with technology and buyer behavior. I'll guide you through every step so nothing catches you off guard.\""},
 {type:"response",text:"If first time: \"That's exciting — you're in good hands. I'll walk you through every step so you never feel lost or unsure.\""},
-{anchor:"Taken Care Of",script:"When all is said and done, what's the one thing that will make you feel truly taken care of?"},
+{anchor:"Taken Care Of",script:"Thank you. One more question in this part — and it's less about process, more about you. When all is said and done, what's the one thing that will make you feel truly taken care of?"},
 {anchor:"Communication",script:"For communication — what works best: text, email, or call? And how often for updates: weekly, only when there's news, or something else?"},
 ]},
 {id:"recap",emoji:"🎬",title:"PART 3: THE RECAP",cue:"Confident playback. Prove you listened. This is your credibility moment.",flow:["Summarize everything","Confirm","Protect… Deliver","Price","Commission"],lines:[
@@ -171,7 +171,7 @@ DATA.forEach(s=>s.lines.forEach((l,i)=>{
     var ci=raw.indexOf(':');
     var lbl=ci>0?raw.substring(0,ci).trim():raw.substring(0,30).trim();
     var script=ci>0?raw.substring(ci+1).trim():raw;
-    ALL_ANCHORS.push({anchor:lbl,script:script,type:'response',isResponse:true,sectionTitle:s.title,sectionEmoji:s.emoji});
+    if(lbl) ALL_ANCHORS.push({anchor:lbl,script:script,type:'response',isResponse:true,sectionTitle:s.title,sectionEmoji:s.emoji});
   }
 }));
 let currentMode='read',quizState={index:0,score:0,answered:[]},fillDifficulty=3;
@@ -184,16 +184,16 @@ function renderRead(){return DATA.map(section=>`<div class="section"><div class=
 
 function toggleSection(el){el.classList.toggle('collapsed');el.nextElementSibling.classList.toggle('hidden')}
 
-function renderQuiz(){const total=ALL_ANCHORS.length,current=ALL_ANCHORS[quizState.index],correct=quizState.answered.filter(a=>a===true).length;if(quizState.index>=total)return`<div class="quiz-container"><div class="quiz-prompt">🎉 Complete!</div><div class="score-bar" style="justify-content:center;flex-direction:column;gap:8px;"><div class="score-value" style="font-size:48px;">${correct}/${total}</div><div class="score-label">${correct===total?'Perfect!':correct>=total*0.8?'Strong!':'Keep practicing.'}</div></div><button class="quiz-next-btn" onclick="quizState={index:0,score:0,answered:new Array(${total}).fill(null)};render();">Try Again</button></div>`;const options=[current.anchor],others=ALL_ANCHORS.filter((_,i)=>i!==quizState.index).map(a=>a.anchor);while(options.length<4&&others.length>0){const idx=Math.floor(Math.random()*others.length);if(!options.includes(others[idx]))options.push(others[idx]);others.splice(idx,1)}for(let i=options.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[options[i],options[j]]=[options[j],options[i]]}const answered=quizState.answered[quizState.index];return`<div class="quiz-container"><div class="quiz-progress">${quizState.answered.map((a,i)=>`<div class="quiz-dot ${i===quizState.index?'current':a===true?'done':a===false?'wrong':''}"></div>`).join('')}</div><div class="score-bar"><div><div class="score-label">Score</div><div class="score-value">${correct}</div></div><div><div class="score-label">Question</div><div class="score-value">${quizState.index+1}/${total}</div></div><div class="score-detail">${current.sectionEmoji} ${current.sectionTitle}</div></div><div class="quiz-section-label">${current.isResponse?"What's the response?":"What anchor comes next?"}</div><div class="quiz-prompt">${quizState.index===0?'First anchor?':`After: ${ALL_ANCHORS[quizState.index-1].anchor}`}</div><div class="quiz-options">${options.map(opt=>`<div class="quiz-option ${answered!==null?(opt===current.anchor?'correct':quizState._selected===opt?'wrong':''):''}" onclick="${answered===null?`quizAnswer('${opt.replace(/'/g,"\\'")}','${current.anchor.replace(/'/g,"\\'")}')`:''}" style="${answered!==null?'cursor:default;':''}">${opt}</div>`).join('')}</div>${answered!==null?`<div class="quiz-reveal">
-  <div style="margin-bottom:8px;">
-    ${current.isResponse
-      ? `<span style="background:#FFF8E1;border:1px solid #F9A825;color:#7B6B2E;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;">↩ ${current.anchor}</span>`
-      : `<span class="anchor-word">${current.anchor}</span>`}
-  </div>
-  <div class="script" style="${current.isResponse?'background:#FFF8E1;border-left:3px solid #F9A825;padding:10px 14px;border-radius:0 8px 8px 0;color:#7B6B2E;':''}">${current.script}</div>
-  ${current.cue?`<div style="margin-top:8px;font-size:13px;color:var(--green);font-style:italic;">${current.cue}</div>`:''}
-</div>
-<button class="quiz-next-btn" onclick="quizState.index++;render();">Next →</button>`:''}</div>`}
+function renderQuizReveal(current){
+  var anchorHtml=current.isResponse
+    ?'<span style="background:#FFF8E1;border:1px solid #F9A825;color:#7B6B2E;font-family:\'JetBrains Mono\',monospace;font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;">\u21a9 '+current.anchor+'</span>'
+    :'<span class="anchor-word">'+current.anchor+'</span>';
+  var scriptStyle=current.isResponse?'background:#FFF8E1;border-left:3px solid #F9A825;padding:10px 14px;border-radius:0 8px 8px 0;color:#7B6B2E;':'';
+  var cueHtml=current.cue?'<div style="margin-top:8px;font-size:13px;color:var(--green);font-style:italic;">'+current.cue+'</div>':'';
+  return '<div class="quiz-reveal"><div style="margin-bottom:8px;">'+anchorHtml+'</div><div class="script" style="'+scriptStyle+'">'+current.script+'</div>'+cueHtml+'</div>';
+}
+
+function renderQuiz(){const total=ALL_ANCHORS.length,current=ALL_ANCHORS[quizState.index],correct=quizState.answered.filter(a=>a===true).length;if(quizState.index>=total)return`<div class="quiz-container"><div class="quiz-prompt">🎉 Complete!</div><div class="score-bar" style="justify-content:center;flex-direction:column;gap:8px;"><div class="score-value" style="font-size:48px;">${correct}/${total}</div><div class="score-label">${correct===total?'Perfect!':correct>=total*0.8?'Strong!':'Keep practicing.'}</div></div><button class="quiz-next-btn" onclick="quizState={index:0,score:0,answered:new Array(${total}).fill(null)};render();">Try Again</button></div>`;const options=[current.anchor],others=ALL_ANCHORS.filter((_,i)=>i!==quizState.index).map(a=>a.anchor);while(options.length<4&&others.length>0){const idx=Math.floor(Math.random()*others.length);if(!options.includes(others[idx]))options.push(others[idx]);others.splice(idx,1)}for(let i=options.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[options[i],options[j]]=[options[j],options[i]]}const answered=quizState.answered[quizState.index];return`<div class="quiz-container"><div class="quiz-progress">${quizState.answered.map((a,i)=>`<div class="quiz-dot ${i===quizState.index?'current':a===true?'done':a===false?'wrong':''}"></div>`).join('')}</div><div class="score-bar"><div><div class="score-label">Score</div><div class="score-value">${correct}</div></div><div><div class="score-label">Question</div><div class="score-value">${quizState.index+1}/${total}</div></div><div class="score-detail">${current.sectionEmoji} ${current.sectionTitle}</div></div><div class="quiz-section-label">${current.isResponse?"What's the response?":"What anchor comes next?"}</div><div class="quiz-prompt">${quizState.index===0?'First anchor?':`After: ${ALL_ANCHORS[quizState.index-1].anchor}`}</div><div class="quiz-options">${options.map(opt=>`<div class="quiz-option ${answered!==null?(opt===current.anchor?'correct':quizState._selected===opt?'wrong':''):''}" onclick="${answered===null?`quizAnswer('${opt.replace(/'/g,"\\'")}','${current.anchor.replace(/'/g,"\\'")}')`:''}" style="${answered!==null?'cursor:default;':''}">${opt}</div>`).join('')}</div>${answered!==null?renderQuizReveal(current)+'<button class="quiz-next-btn" onclick="quizState.index++;render();">Next →</button>':''}</div>`}
 
 function quizAnswer(s,c){quizState.answered[quizState.index]=s===c;quizState._selected=s;if(s===c)quizState.score++;render()}
 
