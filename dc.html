@@ -161,7 +161,19 @@ const DATA=[
 ]}
 ];
 
-const ALL_ANCHORS=[];DATA.forEach(s=>s.lines.forEach(l=>{if(l.anchor)ALL_ANCHORS.push({...l,sectionTitle:s.title,sectionEmoji:s.emoji})}));
+const ALL_ANCHORS=[];
+DATA.forEach(s=>s.lines.forEach((l,i)=>{
+  if(l.anchor){
+    ALL_ANCHORS.push({...l,sectionTitle:s.title,sectionEmoji:s.emoji});
+  } else if(l.type==='response'){
+    // Extract label before first colon as the anchor key
+    var raw=l.text;
+    var ci=raw.indexOf(':');
+    var lbl=ci>0?raw.substring(0,ci).trim():raw.substring(0,30).trim();
+    var script=ci>0?raw.substring(ci+1).trim():raw;
+    ALL_ANCHORS.push({anchor:lbl,script:script,type:'response',isResponse:true,sectionTitle:s.title,sectionEmoji:s.emoji});
+  }
+}));
 let currentMode='read',quizState={index:0,score:0,answered:[]},fillDifficulty=3;
 
 function setMode(m){currentMode=m;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.querySelector(`.nav-btn[onclick="setMode('${m}')"]`).classList.add('active');if(m==='quiz')quizState={index:0,score:0,answered:new Array(ALL_ANCHORS.length).fill(null)};render()}
@@ -172,7 +184,16 @@ function renderRead(){return DATA.map(section=>`<div class="section"><div class=
 
 function toggleSection(el){el.classList.toggle('collapsed');el.nextElementSibling.classList.toggle('hidden')}
 
-function renderQuiz(){const total=ALL_ANCHORS.length,current=ALL_ANCHORS[quizState.index],correct=quizState.answered.filter(a=>a===true).length;if(quizState.index>=total)return`<div class="quiz-container"><div class="quiz-prompt">🎉 Complete!</div><div class="score-bar" style="justify-content:center;flex-direction:column;gap:8px;"><div class="score-value" style="font-size:48px;">${correct}/${total}</div><div class="score-label">${correct===total?'Perfect!':correct>=total*0.8?'Strong!':'Keep practicing.'}</div></div><button class="quiz-next-btn" onclick="quizState={index:0,score:0,answered:new Array(${total}).fill(null)};render();">Try Again</button></div>`;const options=[current.anchor],others=ALL_ANCHORS.filter((_,i)=>i!==quizState.index).map(a=>a.anchor);while(options.length<4&&others.length>0){const idx=Math.floor(Math.random()*others.length);if(!options.includes(others[idx]))options.push(others[idx]);others.splice(idx,1)}for(let i=options.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[options[i],options[j]]=[options[j],options[i]]}const answered=quizState.answered[quizState.index];return`<div class="quiz-container"><div class="quiz-progress">${quizState.answered.map((a,i)=>`<div class="quiz-dot ${i===quizState.index?'current':a===true?'done':a===false?'wrong':''}"></div>`).join('')}</div><div class="score-bar"><div><div class="score-label">Score</div><div class="score-value">${correct}</div></div><div><div class="score-label">Question</div><div class="score-value">${quizState.index+1}/${total}</div></div><div class="score-detail">${current.sectionEmoji} ${current.sectionTitle}</div></div><div class="quiz-section-label">What anchor comes next?</div><div class="quiz-prompt">${quizState.index===0?'First anchor?':`After: ${ALL_ANCHORS[quizState.index-1].anchor}`}</div><div class="quiz-options">${options.map(opt=>`<div class="quiz-option ${answered!==null?(opt===current.anchor?'correct':quizState._selected===opt?'wrong':''):''}" onclick="${answered===null?`quizAnswer('${opt.replace(/'/g,"\\'")}','${current.anchor.replace(/'/g,"\\'")}')`:''}" style="${answered!==null?'cursor:default;':''}">${opt}</div>`).join('')}</div>${answered!==null?`<div class="quiz-reveal"><div style="margin-bottom:8px;"><span class="anchor-word">${current.anchor}</span></div><div class="script">${current.script}</div>${current.cue?`<div style="margin-top:8px;font-size:13px;color:var(--green);font-style:italic;">${current.cue}</div>`:''}</div><button class="quiz-next-btn" onclick="quizState.index++;render();">Next →</button>`:''}</div>`}
+function renderQuiz(){const total=ALL_ANCHORS.length,current=ALL_ANCHORS[quizState.index],correct=quizState.answered.filter(a=>a===true).length;if(quizState.index>=total)return`<div class="quiz-container"><div class="quiz-prompt">🎉 Complete!</div><div class="score-bar" style="justify-content:center;flex-direction:column;gap:8px;"><div class="score-value" style="font-size:48px;">${correct}/${total}</div><div class="score-label">${correct===total?'Perfect!':correct>=total*0.8?'Strong!':'Keep practicing.'}</div></div><button class="quiz-next-btn" onclick="quizState={index:0,score:0,answered:new Array(${total}).fill(null)};render();">Try Again</button></div>`;const options=[current.anchor],others=ALL_ANCHORS.filter((_,i)=>i!==quizState.index).map(a=>a.anchor);while(options.length<4&&others.length>0){const idx=Math.floor(Math.random()*others.length);if(!options.includes(others[idx]))options.push(others[idx]);others.splice(idx,1)}for(let i=options.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[options[i],options[j]]=[options[j],options[i]]}const answered=quizState.answered[quizState.index];return`<div class="quiz-container"><div class="quiz-progress">${quizState.answered.map((a,i)=>`<div class="quiz-dot ${i===quizState.index?'current':a===true?'done':a===false?'wrong':''}"></div>`).join('')}</div><div class="score-bar"><div><div class="score-label">Score</div><div class="score-value">${correct}</div></div><div><div class="score-label">Question</div><div class="score-value">${quizState.index+1}/${total}</div></div><div class="score-detail">${current.sectionEmoji} ${current.sectionTitle}</div></div><div class="quiz-section-label">${current.isResponse?"What's the response?":"What anchor comes next?"}</div><div class="quiz-prompt">${quizState.index===0?'First anchor?':`After: ${ALL_ANCHORS[quizState.index-1].anchor}`}</div><div class="quiz-options">${options.map(opt=>`<div class="quiz-option ${answered!==null?(opt===current.anchor?'correct':quizState._selected===opt?'wrong':''):''}" onclick="${answered===null?`quizAnswer('${opt.replace(/'/g,"\\'")}','${current.anchor.replace(/'/g,"\\'")}')`:''}" style="${answered!==null?'cursor:default;':''}">${opt}</div>`).join('')}</div>${answered!==null?`<div class="quiz-reveal">
+  <div style="margin-bottom:8px;">
+    ${current.isResponse
+      ? `<span style="background:#FFF8E1;border:1px solid #F9A825;color:#7B6B2E;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;">↩ ${current.anchor}</span>`
+      : `<span class="anchor-word">${current.anchor}</span>`}
+  </div>
+  <div class="script" style="${current.isResponse?'background:#FFF8E1;border-left:3px solid #F9A825;padding:10px 14px;border-radius:0 8px 8px 0;color:#7B6B2E;':''}">${current.script}</div>
+  ${current.cue?`<div style="margin-top:8px;font-size:13px;color:var(--green);font-style:italic;">${current.cue}</div>`:''}
+</div>
+<button class="quiz-next-btn" onclick="quizState.index++;render();">Next →</button>`:''}</div>`}
 
 function quizAnswer(s,c){quizState.answered[quizState.index]=s===c;quizState._selected=s;if(s===c)quizState.score++;render()}
 
